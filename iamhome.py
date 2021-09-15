@@ -14,7 +14,8 @@ def handler(event, context):
         'version': event['version'],
         'session': event['session'],
         'response': {
-            # Respond with the original request or welcome the user if this is the beginning of the dialog and the request has not yet been made.
+            # Respond with the original request or welcome the user if this \
+            # is the beginning of the dialog and the request has not yet been made.
             'text': text,
             # Don't finish the session after this response.
             'end_session': 'false'
