@@ -1,0 +1,27 @@
+project_name: iamhome
+project_slug: iamhome
+description: null
+requirements_file: requirements.txt
+bucket: null
+application_type: raw
+entrypoint: iamhome.handler
+django_settings_module: null
+folder_id: b1g0r0ua2f75875op501
+gw_config: yappa_gw.yaml
+manage_function_name: null
+runtime: python38
+memory_limit: 128MB
+timeout: 1
+service_account_names:
+  creator: yappa-creator-account-default
+  function_actor: null
+excluded_paths:
+- env
+- .git
+- .idea
+- .DS_Store
+environment: {}
+named_service_accounts: {}
+service_account_id: null
+is_public: true
+bucket_name: iamhome-937d75d0
