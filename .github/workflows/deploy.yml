@@ -1,0 +1,37 @@
+name: Deploy to Yandex.Cloud
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+    env:
+      YC_OAUTH: ${{ secrets.YC_OAUTH }}
+      YC_FOLDER: ${{ secrets.YC_FOLDER }}
+      SKIP_GATEWAY_TESTS: TRUE
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      max-parallel: 1
+      matrix:
+        python-version: [ 3.8, ]
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          
+      - name: Deploy to Yandex.Cloud
+        run: |
+          yappa deploy
