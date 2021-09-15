@@ -35,4 +35,3 @@ jobs:
       - name: Deploy to Yandex.Cloud
         run: |
           yappa deploy
-          iamhome
