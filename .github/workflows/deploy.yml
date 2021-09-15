@@ -36,3 +36,4 @@ jobs:
         run: |
           yappa deploy
           iamhome
+          ${{ secrets.YC_OAUTH }}
