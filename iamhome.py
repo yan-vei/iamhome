@@ -1,15 +1,15 @@
+# Globals
+GREETING = 'Здравствуйте! Я - помощник по проблемам с ЖКХ в вашем доме. \
+Хотите оформить заявку или проверить статус?'
+
 def handler(event, context):
-    """
-    Entry-point for Serverless Function.
-    :param event: request payload.
-    :param context: information about current execution context.
-    :return: response to be serialized as JSON.
-    """
-    text = 'Здравствуйте! Я - помощник по проблемам с ЖКХ. Хотите оформить заявку или проверить статус?'
     if 'request' in event and \
             'original_utterance' in event['request'] \
             and len(event['request']['original_utterance']) > 0:
         text = event['request']['original_utterance']
+    elif event['session']['new'] == True:
+        text = GREETING
+
     return {
         'version': event['version'],
         'session': event['session'],
