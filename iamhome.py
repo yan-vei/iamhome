@@ -9,5 +9,9 @@ def handler(event, context):
     print('Incoming request: ' + json.dumps(event))
     request = Request(event)
     current_scene_id = event.get('state', {}).get(STATE_REQUEST_KEY, {}).get('scene')
+    print(current_scene_id)
     if current_scene_id is None:
         return DEFAULT_SCENE().reply(request)
+    else:
+        print('Failed to provide answer.')
+        return DEFAULT_SCENE().fallback(request)
