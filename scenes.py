@@ -58,7 +58,7 @@ class Scene(ABC):
         return webhook_response
 
 
-class Greeting():
+class Greeting(Scene):
     def reply(self, request: Request):
         text = ('Здравствуйте! Я - помощник по проблемам с ЖКХ в вашем доме. \
 Хотите оформить заявку или проверить статус?')
