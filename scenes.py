@@ -5,6 +5,7 @@ import sys
 
 from request import Request
 from state import STATE_RESPONSE_KEY
+import intents
 
 class Scene(ABC):
 
@@ -64,8 +65,13 @@ class Greeting(Scene):
 Хотите оформить заявку или проверить статус?')
         return self.make_response(text)
 
-    def handle_global_intents(self):
-        pass
+    def handle_global_intents(self, request):
+        if intents.CREATE_INQUIRY in request.intents:
+            text = ('Хорошо, давайте оформим заявку. Где проблема: в доме или в подъезде?')
+            return self.make_response(text)
+        elif intents.CHECK_INQUIRY in request.intents:
+            text = ('Хорошо, давайте проверим вашу последнюю заявку...')
+            return self.make_response(text)
 
     def handle_local_intents(request: Request) -> Optional[str]:
         pass
