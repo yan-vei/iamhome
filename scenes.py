@@ -74,7 +74,12 @@ class Greeting(Scene):
             return self.make_response(text)
 
     def handle_local_intents(request: Request) -> Optional[str]:
-        pass
+        if intents.CREATE_INQUIRY in request.intents:
+            text = ('Хорошо, давайте оформим заявку. Где проблема: в доме или в подъезде?')
+            return self.make_response(text)
+        elif intents.CHECK_INQUIRY in request.intents:
+            text = ('Хорошо, давайте проверим вашу последнюю заявку...')
+            return self.make_response(text)
 
 
 def _list_scenes():
