@@ -62,7 +62,13 @@ class Greeting():
     def reply(self, request: Request):
         text = ('Здравствуйте! Я - помощник по проблемам с ЖКХ в вашем доме. \
 Хотите оформить заявку или проверить статус?')
-        return Scene.make_response(text)
+        return self.make_response(text)
+
+    def handle_global_intents(self):
+        pass
+
+    def handle_local_intents(request: Request) -> Optional[str]:
+        pass
 
 
 def _list_scenes():
