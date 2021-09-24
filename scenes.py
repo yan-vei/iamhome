@@ -75,6 +75,9 @@ class Greeting(GenericScene):
 Хотите оформить заявку или проверить статус?')
         return self.make_response(text)
 
+    def handle_local_intents(self, request: Request):
+        pass
+
 
 def _list_scenes():
     current_module = sys.modules[__name__]
