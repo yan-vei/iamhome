@@ -59,27 +59,65 @@ class Scene(ABC):
         return webhook_response
 
 
-class Greeting(Scene):
+def move_to_step(request: Request, intent_name: str):
+    if intent_name == intents.CHECK_INQUIRY:
+        return StartCheck()
+    elif intent_name == intents.START_INQUIRY:
+        return StartInquiry()
+    elif intent_name == intents.YANDEX_HELP:
+        return Help()
+
+
+def BasicAppScene(Scene):
+    def handle_global_intents(self, request: Request):
+        if intents.CREATE_INQUIRY in request.intents:
+            return move_to_step(request, intents.CREATE_INQUIRY)
+        elif intents.CHECK_INQUIRY in request.intents:
+            return self.make_response(request, intents.CHECK_INQUIRY)
+
+    def handle_local_intents(self, request: Request):
+        print('User requested help.')
+        if intents.YANDEX_HELP in request.intents:
+            return move_to_step(request, intents.YANDEX_HELP)
+
+
+class Greeting(BasicAppScene):
     def reply(self, request: Request):
         text = ('Здравствуйте! Я - помощник по проблемам с ЖКХ в вашем доме. \
 Хотите оформить заявку или проверить статус?')
         return self.make_response(text)
 
-    def handle_local_intents(self, request: Request):
-        print('User requested help.')
-        if intents.YANDEX_HELP in request.intents:
-            text = ('Давайте я подскажу вам, что я могу сделать. \
-            Например, я могу оформить заявку о засорившемся мусоропроводе, или, \
-            если вы уже создали заявку, я могу ее проверить. Хотите оформить заявку или проверить статус?')
+
+def Help(BasicAppScene):
+    def reply(self, request: Request):
+        text = ('Давайте я подскажу вам, что я могу сделать. \
+                    Например, я могу оформить заявку о засорившемся мусоропроводе, или, \
+                    если вы уже создали заявку, я могу ее проверить. Хотите оформить заявку или проверить статус?')
+        return self.make_response(text)
+
+
+def StartCheck(BasicAppScene):
+    def reply(self, request: Request):
+        text = ('Хорошо, давайте оформим заявку. Где проблема: в доме или в подъезде?')
         return self.make_response(text)
 
     def handle_global_intents(self, request: Request):
-        if intents.CREATE_INQUIRY in request.intents:
-            text = ('Хорошо, давайте оформим заявку. Где проблема: в доме или в подъезде?')
-            return self.make_response(text)
-        elif intents.CHECK_INQUIRY in request.intents:
-            text = ('Хорошо, давайте проверим вашу последнюю заявку...')
-            return self.make_response(text)
+        pass
+
+    def handle_local_intents(self, request: Request):
+        pass
+
+
+def StartInquiry(BasicAppScene):
+    def reply(self, request: Request):
+        text = ('Хорошо, давайте проверим вашу последнюю заявку...')
+        return self.make_response(text)
+
+    def handle_global_intents(self, request: Request):
+        pass
+
+    def handle_local_intents(self, request: Request):
+        pass
 
 
 def _list_scenes():
