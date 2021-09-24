@@ -76,7 +76,7 @@ def BasicAppScene(Scene):
             return move_to_step(request, intents.CHECK_INQUIRY)
 
     def handle_local_intents(self, request: Request):
-        pass
+        return None
 
 
 class Greeting(BasicAppScene):
