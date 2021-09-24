@@ -59,17 +59,12 @@ class Scene(ABC):
         return webhook_response
 
 
-def GenericScene(Scene):
+def GenericApplication(Scene):
     def handle_global_intents(self, request):
-        if intents.CREATE_INQUIRY in request.intents:
-            text = ('Хорошо, давайте оформим заявку. Где проблема: в доме или в подъезде?')
-            return self.make_response(text)
-        elif intents.CHECK_INQUIRY in request.intents:
-            text = ('Хорошо, давайте проверим вашу последнюю заявку...')
-            return self.make_response(text)
+        pass
 
 
-class Greeting(GenericScene):
+class Greeting(GenericApplication):
     def reply(self, request: Request):
         text = ('Здравствуйте! Я - помощник по проблемам с ЖКХ в вашем доме. \
 Хотите оформить заявку или проверить статус?')
