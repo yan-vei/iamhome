@@ -1,5 +1,6 @@
 # iamhome - skill for Yandex.Alisa
 [![Deploy to Yandex.Cloud](https://github.com/yan-vei/iamhome/actions/workflows/deploy.yml/badge.svg)](https://github.com/yan-vei/iamhome/actions/workflows/deploy.yml)
+
 IAmHome is a skill for Yandex.Alisa that the team camelCase developed for the online hackathon, jointly organized by Yandex and ITMO University.
 
 ## What can the skill do for you?
