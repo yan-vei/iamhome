@@ -59,6 +59,7 @@ class Scene(ABC):
         return webhook_response
 
 
+# ИСПОЛЬЗОВАТЬ ДЛЯ ДВИЖЕНИЯ МЕЖДУ СЦЕНАМИ ДАЛЕЕ
 def move_to_step(request: Request, intent_name: str):
     if intent_name == intents.CHECK_INQUIRY:
         return StartCheck()
@@ -100,7 +101,7 @@ class Help(Beginning):
         pass
 
 
-class StartCheck(Beginning):
+class StartInquiry(Beginning):
     def reply(self, request: Request):
         text = ('Хорошо, давайте оформим заявку. Где проблема: в доме или в подъезде?')
         return self.make_response(text)
@@ -109,7 +110,7 @@ class StartCheck(Beginning):
         pass
 
 
-class StartInquiry(Beginning):
+class StartCheck(Beginning):
     def reply(self, request: Request):
         text = ('Хорошо, давайте проверим вашу последнюю заявку...')
         return self.make_response(text)
