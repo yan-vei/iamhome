@@ -37,7 +37,7 @@ class Scene(ABC):
         return self.make_response('Извините, я вас не поняла. Пожалуйста, попробуйте повторить ваш ответ.')
 
     def make_response(self, text, tts=None, card=None, state=None,
-                      buttons=None, directives=None, session_state=None):
+                      buttons=None, directives=None, application_state=None, user_state=None):
         response = {
             'text': text,
             'tts': tts if tts is not None else text,
@@ -48,8 +48,10 @@ class Scene(ABC):
             response['buttons'] = buttons
         if directives is not None:
             response['directives'] = directives
-        if session_state is not None:
-            response['state'] = session_state
+        if application_state is not None:
+            response['application_state'] = application_state
+        if user_state is not None:
+            response['user_state_update'] = user_state
         webhook_response = {
             'response': response,
             'version': '1.0',
