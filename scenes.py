@@ -66,7 +66,12 @@ class Greeting(Scene):
         return self.make_response(text)
 
     def handle_local_intents(self, request: Request):
-        pass
+        print('User requested help.')
+        if intents.YANDEX_HELP in request.intents:
+            text = ('Давайте я подскажу вам, что я могу сделать. \
+            Например, я могу оформить заявку о засорившемся мусоропроводе, или, \
+            если вы уже создали заявку, я могу ее проверить. Хотите оформить заявку или проверить статус?')
+        return self.make_response(text)
 
     def handle_global_intents(self, request: Request):
         if intents.CREATE_INQUIRY in request.intents:
