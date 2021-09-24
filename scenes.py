@@ -69,15 +69,15 @@ def move_to_step(request: Request, intent_name: str):
 
 
 def BasicAppScene(Scene):
-    def handle_global_intents(self, request: Request):
+    def handle_global_intents(self, request):
         if intents.CREATE_INQUIRY in request.intents:
             return move_to_step(request, intents.CREATE_INQUIRY)
         elif intents.CHECK_INQUIRY in request.intents:
-            return self.make_response(request, intents.CHECK_INQUIRY)
+            return move_to_step(request, intents.CHECK_INQUIRY)
 
     def handle_local_intents(self, request: Request):
         print('User requested help.')
-        if intents.YANDEX_HELP in request.intents:
+        if intents.YANDEX_HELP:
             return move_to_step(request, intents.YANDEX_HELP)
 
 
