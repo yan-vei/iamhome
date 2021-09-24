@@ -1,9 +1,21 @@
-# iamhome - skill for Yandex.Alisa
+# "Я в домике" - навык для Яндекс.Алисы
 [![Deploy to Yandex.Cloud](https://github.com/yan-vei/iamhome/actions/workflows/deploy.yml/badge.svg)](https://github.com/yan-vei/iamhome/actions/workflows/deploy.yml)
+[![CodeQL analysis](https://github.com/yan-vei/iamhome/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/yan-vei/iamhome/actions/workflows/codeql-analysis.yml)<br>
+"Я в домике" - это навык-помощник по проблемам с ЖКХ для Яндекс.Алисы.<br>
 
-IAmHome is a skill for Yandex.Alisa that the team camelCase developed for the online hackathon, jointly organized by Yandex and ITMO University.
+Данный навык был разработан командой camelCase для [онлайн-хакатона](https://yandex.ru/promo/events/generated/online-hakathon-spb/index) по городским навыкам для Санкт-Петербурга, который был организован командами Яндекс.Алисы, Яндекс.Диалогов и Яндекс.Облака совместно с университетом ИТМО. 
 
-## What can the skill do for you?
-If you live in Saint-Petersburg, Russian Federation, our skill can:
-1. Register your inquiry regarding any problems with housing and public utilities in your apartment and house.
-2. Check the status of your already created inquiry.
+## Что может наш навык?
+Если вы проживаете в Санкт-Петербурге, наш навык может:
+1. Зарегистрировать ваше обращение о проблеме с ЖКХ в вашей квартире или доме.
+2. Проверить статус уже зарегистрированного обращения.
+
+## Как пользоваться навыком?
+Чтобы запустить наш навык, скажите Алисе: "Запусти навык Я в домике".<br>
+Далее выберите, что вы хотите сделать: оформить новую заявку или проверить статус уже существующей.<br>
+Например, вы можете оформить заявку о неубранном с крыши вашего дома снеге (только в зимнее время!) или о плохом качестве воды.
+Следуйте указаниям Алисы, отвечая на вопросы, и ваша заявка будет зарегистрирована уже через несколько секунд!
+
+## Технологии
+Для деплоя на Яндекс.Облако мы используем [Yappa](https://github.com/turokg/yappa).
+Остальной стак: Python, serverless-функция на Яндекс.Облаке.
