@@ -81,10 +81,12 @@ class Beginning(Scene):
         elif intents.CHECK_INQUIRY in request.intents:
             print('User wants to check inquiry.')
             return StartCheck()
-
-    def handle_local_intents(selfl, request: Request):
-        if intents.YANDEX_HELP:
+        elif intents.YANDEX_HELP in request.intents:
+            print('User requested help.')
             return Help()
+
+    def handle_local_intents(self, request: Request):
+        pass
 
 
 def Help(Beginning):
@@ -96,6 +98,7 @@ def Help(Beginning):
 
     def handle_local_intents(self, request: Request):
         pass
+
 
 def StartCheck(Beginning):
     def reply(self, request: Request):
