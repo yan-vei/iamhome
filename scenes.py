@@ -76,9 +76,7 @@ def BasicAppScene(Scene):
             return move_to_step(request, intents.CHECK_INQUIRY)
 
     def handle_local_intents(self, request: Request):
-        print('User requested help.')
-        if intents.YANDEX_HELP:
-            return move_to_step(request, intents.YANDEX_HELP)
+        pass
 
 
 class Greeting(BasicAppScene):
@@ -101,9 +99,6 @@ def StartCheck(BasicAppScene):
         text = ('Хорошо, давайте оформим заявку. Где проблема: в доме или в подъезде?')
         return self.make_response(text)
 
-    def handle_global_intents(self, request: Request):
-        pass
-
     def handle_local_intents(self, request: Request):
         pass
 
@@ -112,9 +107,6 @@ def StartInquiry(BasicAppScene):
     def reply(self, request: Request):
         text = ('Хорошо, давайте проверим вашу последнюю заявку...')
         return self.make_response(text)
-
-    def handle_global_intents(self, request: Request):
-        pass
 
     def handle_local_intents(self, request: Request):
         pass
