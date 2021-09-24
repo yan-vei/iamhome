@@ -59,12 +59,7 @@ class Scene(ABC):
         return webhook_response
 
 
-class Greeting(Scene):
-    def reply(self, request: Request):
-        text = ('Здравствуйте! Я - помощник по проблемам с ЖКХ в вашем доме. \
-Хотите оформить заявку или проверить статус?')
-        return self.make_response(text)
-
+def GenericScene(Scene):
     def handle_global_intents(self, request):
         if intents.CREATE_INQUIRY in request.intents:
             text = ('Хорошо, давайте оформим заявку. Где проблема: в доме или в подъезде?')
@@ -73,13 +68,20 @@ class Greeting(Scene):
             text = ('Хорошо, давайте проверим вашу последнюю заявку...')
             return self.make_response(text)
 
-    def handle_local_intents(self, request: Request) -> Optional[str]:
-        if intents.CREATE_INQUIRY in request.intents:
-            text = ('Хорошо, давайте оформим заявку. Где проблема: в доме или в подъезде?')
-            return self.make_response(text)
-        elif intents.CHECK_INQUIRY in request.intents:
-            text = ('Хорошо, давайте проверим вашу последнюю заявку...')
-            return self.make_response(text)
+
+class Greeting(GenericScene):
+    def reply(self, request: Request):
+        text = ('Здравствуйте! Я - помощник по проблемам с ЖКХ в вашем доме. \
+Хотите оформить заявку или проверить статус?')
+        return self.make_response(text)
+
+    def handle_local_intents(self, request):
+        print('User requested help.')
+        if intents.YANDEX_HELP in request.intents:
+            text = ('Давайте я подскажу вам, что я могу сделать. \
+            Например, я могу оформить заявку о засорившемся мусоропроводе, или, \
+            если вы уже создали заявку, я могу ее проверить. Хотите оформить заявку или проверить статус?')
+        return self.make_response(text)
 
 
 def _list_scenes():
