@@ -75,7 +75,7 @@ class Greeting(GenericScene):
 Хотите оформить заявку или проверить статус?')
         return self.make_response(text)
 
-    def handle_local_intents(self, request):
+    def handle_local_intents(self, request: Request):
         print('User requested help.')
         if intents.YANDEX_HELP in request.intents:
             text = ('Давайте я подскажу вам, что я могу сделать. \
