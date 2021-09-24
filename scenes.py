@@ -89,7 +89,7 @@ class Beginning(Scene):
         pass
 
 
-def Help(Beginning):
+class Help(Beginning):
     def reply(self, request: Request):
         text = ('Давайте я подскажу вам, что я могу сделать. \
                     Например, я могу оформить заявку о засорившемся мусоропроводе, или, \
@@ -100,7 +100,7 @@ def Help(Beginning):
         pass
 
 
-def StartCheck(Beginning):
+class StartCheck(Beginning):
     def reply(self, request: Request):
         text = ('Хорошо, давайте оформим заявку. Где проблема: в доме или в подъезде?')
         return self.make_response(text)
@@ -109,7 +109,7 @@ def StartCheck(Beginning):
         pass
 
 
-def StartInquiry(Beginning):
+class StartInquiry(Beginning):
     def reply(self, request: Request):
         text = ('Хорошо, давайте проверим вашу последнюю заявку...')
         return self.make_response(text)
