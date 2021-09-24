@@ -68,33 +68,36 @@ def move_to_step(request: Request, intent_name: str):
         return Help()
 
 
-def BasicAppScene(Scene):
-    def handle_global_intents(self, request):
-        if intents.CREATE_INQUIRY in request.intents:
-            return move_to_step(request, intents.CREATE_INQUIRY)
-        elif intents.CHECK_INQUIRY in request.intents:
-            return move_to_step(request, intents.CHECK_INQUIRY)
-
-    def handle_local_intents(self, request: Request):
-        return None
-
-
-class Greeting(BasicAppScene):
+class Beginning(Scene):
     def reply(self, request: Request):
         text = ('Здравствуйте! Я - помощник по проблемам с ЖКХ в вашем доме. \
 Хотите оформить заявку или проверить статус?')
         return self.make_response(text)
 
+    def handle_global_intents(self, request):
+        if intents.CREATE_INQUIRY in request.intents:
+            print('User wants to create an inquiry.')
+            return StartInquiry()
+        elif intents.CHECK_INQUIRY in request.intents:
+            print('User wants to check inquiry.')
+            return StartCheck()
 
-def Help(BasicAppScene):
+    def handle_local_intents(selfl, request: Request):
+        if intents.YANDEX_HELP:
+            return Help()
+
+
+def Help(Beginning):
     def reply(self, request: Request):
         text = ('Давайте я подскажу вам, что я могу сделать. \
                     Например, я могу оформить заявку о засорившемся мусоропроводе, или, \
                     если вы уже создали заявку, я могу ее проверить. Хотите оформить заявку или проверить статус?')
         return self.make_response(text)
 
+    def handle_local_intents(self, request: Request):
+        pass
 
-def StartCheck(BasicAppScene):
+def StartCheck(Beginning):
     def reply(self, request: Request):
         text = ('Хорошо, давайте оформим заявку. Где проблема: в доме или в подъезде?')
         return self.make_response(text)
@@ -103,7 +106,7 @@ def StartCheck(BasicAppScene):
         pass
 
 
-def StartInquiry(BasicAppScene):
+def StartInquiry(Beginning):
     def reply(self, request: Request):
         text = ('Хорошо, давайте проверим вашу последнюю заявку...')
         return self.make_response(text)
@@ -125,4 +128,4 @@ SCENES = {
     scene.id(): scene for scene in _list_scenes()
 }
 
-DEFAULT_SCENE = Greeting
+DEFAULT_SCENE = Beginning
