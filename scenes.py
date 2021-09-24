@@ -59,17 +59,7 @@ class Scene(ABC):
         return webhook_response
 
 
-def GenericScene(Scene):
-    def handle_global_intents(self, request):
-        if intents.CREATE_INQUIRY in request.intents:
-            text = ('Хорошо, давайте оформим заявку. Где проблема: в доме или в подъезде?')
-            return self.make_response(text)
-        elif intents.CHECK_INQUIRY in request.intents:
-            text = ('Хорошо, давайте проверим вашу последнюю заявку...')
-            return self.make_response(text)
-
-
-class Greeting(GenericScene):
+class Greeting(Scene):
     def reply(self, request: Request):
         text = ('Здравствуйте! Я - помощник по проблемам с ЖКХ в вашем доме. \
 Хотите оформить заявку или проверить статус?')
@@ -77,6 +67,14 @@ class Greeting(GenericScene):
 
     def handle_local_intents(self, request: Request):
         pass
+
+    def handle_global_intents(self, request: Request):
+        if intents.CREATE_INQUIRY in request.intents:
+            text = ('Хорошо, давайте оформим заявку. Где проблема: в доме или в подъезде?')
+            return self.make_response(text)
+        elif intents.CHECK_INQUIRY in request.intents:
+            text = ('Хорошо, давайте проверим вашу последнюю заявку...')
+            return self.make_response(text)
 
 
 def _list_scenes():
