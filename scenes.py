@@ -36,7 +36,8 @@ class Scene(ABC):
     def fallback(self, request: Request):
         return self.make_response('Извините, я вас не поняла. Пожалуйста, попробуйте повторить ваш ответ.')
 
-    def make_response(self, text, tts=None, card=None, state=None, buttons=None, directives=None):
+    def make_response(self, text, tts=None, card=None, state=None,
+                      buttons=None, directives=None, session_state=None):
         response = {
             'text': text,
             'tts': tts if tts is not None else text,
@@ -47,6 +48,8 @@ class Scene(ABC):
             response['buttons'] = buttons
         if directives is not None:
             response['directives'] = directives
+        if session_state is not None:
+            response['state'] = session_state
         webhook_response = {
             'response': response,
             'version': '1.0',
