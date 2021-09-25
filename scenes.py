@@ -167,7 +167,7 @@ class StartCheck(Beginning):
             text = ('Хорошо, давайте проверим вашу последнюю заявку под номером ' + request.session_state + '. Хотите сообщить об еще одной проблеме?')
             return self.make_response(text)
         else:
-            text = ('Пока что вы не оставляли никаких заявок. Хотите оставить свою первую заявку?')
+            text = ('Пока что вы не оставляли никаких заявок. Хотите оставить свою заявку?')
             return self.make_response(text)
 
     def handle_local_intents(self, request: Request):
