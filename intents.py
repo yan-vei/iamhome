@@ -4,4 +4,4 @@ CHECK_INQUIRY = 'checkInquiry'
 YANDEX_HELP = 'YANDEX.HELP'
 
 # Интенты для оформления заявки
-CHOOSE_INQUIRY_LOCATION = 'сhooseInquiryLocation'
+CHOOSE_INQUIRY_LOCATION = 'chooseInquiryLocation'
