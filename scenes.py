@@ -172,8 +172,23 @@ class DetailsCollector(Beginning):
         return self.make_response(text)
 
     def handle_local_intents(self, request: Request):
-        print(request.entities)
-        pass
+        for entity in request.entities:
+            if entity['type'] == intents.YANDEX_GEO:
+                print('User set the address as ' + entity['value'])
+                if 'street' in entity['value'].keys() and 'house_number' in entity['value'].keys():
+                    return InquiryAccepted()
+
+class InquiryAccepted(DetailsCollector):
+    def reply(self, request: Request):
+        text = ('Ваша заявка зарегистрирована. Спасибо за обращение! Хотите оформить еще одну заявку?')
+        return self.make_response(text)
+
+    def handle_local_intents(self, request: Request):
+        if intents.YANDEX_CONFIRM in request.intents:
+            print('User wants to create a new inquiry.')
+            return StartInquiry()
+        elif intents.YANDEX_REJECT in request.intents:
+            return End()
 
 
 class StartCheck(Beginning):
@@ -187,6 +202,12 @@ class StartCheck(Beginning):
 
     def handle_local_intents(self, request: Request):
         pass
+
+
+class End(Beginning):
+    def reply(self, request: Request):
+        text = ('Хорошо. До новых встреч!')
+        return self.make_response(text, end_session=True)
 
 
 def _list_scenes():
