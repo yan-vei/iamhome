@@ -5,3 +5,6 @@ YANDEX_HELP = 'YANDEX.HELP'
 
 # Интенты для оформления заявки
 CHOOSE_INQUIRY_LOCATION = 'chooseInquiryLocation'
+
+# Интенты по категориям проблем
+APARTMENT_INTENTS = [{'intent_name': 'lowTempApartment', 'category_id': 1}]

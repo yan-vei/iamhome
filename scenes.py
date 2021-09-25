@@ -147,10 +147,21 @@ class HouseInquiry(GenericInquiry):
 
 class ApartmentInquiry(GenericInquiry):
     def handle_local_intents(self, request: Request):
-        pass
+        for intent in intents.APARTMENT_INTENTS:
+            if intent['intent_name'] in request.intents:
+                return DetailsCollector()
 
 
 class EntranceInquiry(GenericInquiry):
+    def handle_local_intents(self, request: Request):
+        pass
+
+
+class DetailsCollector(Beginning):
+    def reply(self, request: Request):
+        text = ('Поняла вас. Подскажете адрес?')
+        return self.make_response(text)
+
     def handle_local_intents(self, request: Request):
         pass
 
