@@ -2,10 +2,43 @@ from abc import ABC, abstractmethod
 from typing import Optional
 import inspect
 import sys
+import enum
 
 from request import Request
 from state import STATE_RESPONSE_KEY
 import intents
+
+
+# Entities
+class Location(enum.Enum):
+    UNKNOWN = 1
+    APARTMENT = 2
+    HOUSE = 3
+    ENTRANCE = 4
+
+    @classmethod
+    def from_request(cls, request: Request, intent_name: str):
+        slot = request.intents[intent_name]['slots']['location']['value']
+        if slot == 'apartment':
+            return cls.APARTMENT
+        elif slot == 'house':
+            return cls.HOUSE
+        elif slot == 'entrance':
+            return cls.ENTRANCE
+        else:
+            return cls.UNKNOWN
+
+
+# Выбор локации, по которой обращается пользователь
+def choose_inquiry_location(request: Request, intent_name: str):
+    location = Location.from_request(request, intent_name)
+    if location == Location.HOUSE:
+        return HouseInquiry()
+    elif location == Location.APARTMENT:
+        return ApartmentInquiry()
+    elif location == Location.ENTRANCE:
+        return EntranceInquiry()
+
 
 class Scene(ABC):
 
@@ -68,16 +101,6 @@ class Scene(ABC):
         return webhook_response
 
 
-# ИСПОЛЬЗОВАТЬ ДЛЯ ДВИЖЕНИЯ МЕЖДУ СЦЕНАМИ ДАЛЕЕ
-def move_to_step(request: Request, intent_name: str):
-    if intent_name == intents.CHECK_INQUIRY:
-        return StartCheck()
-    elif intent_name == intents.START_INQUIRY:
-        return StartInquiry()
-    elif intent_name == intents.YANDEX_HELP:
-        return Help()
-
-
 class Beginning(Scene):
     def reply(self, request: Request):
         text = ('Здравствуйте! Я - помощник по проблемам с ЖКХ в вашем доме. \
@@ -85,18 +108,17 @@ class Beginning(Scene):
         return self.make_response(text)
 
     def handle_global_intents(self, request):
+        if intents.YANDEX_HELP in request.intents:
+            print('User requested help.')
+            return Help()
+
+    def handle_local_intents(self, request: Request):
         if intents.CREATE_INQUIRY in request.intents:
             print('User wants to create an inquiry.')
             return StartInquiry()
         elif intents.CHECK_INQUIRY in request.intents:
             print('User wants to check inquiry.')
             return StartCheck()
-        elif intents.YANDEX_HELP in request.intents:
-            print('User requested help.')
-            return Help()
-
-    def handle_local_intents(self, request: Request):
-        pass
 
 
 class Help(Beginning):
@@ -112,9 +134,32 @@ class Help(Beginning):
 
 class StartInquiry(Beginning):
     def reply(self, request: Request):
-        text = ('Хорошо, давайте оформим заявку. Где проблема: в доме или в подъезде?')
+        text = ('Хорошо, давайте оформим заявку. Где проблема: в доме или в квартире?')
         return self.make_response(text)
 
+    def handle_local_intents(self, request: Request):
+        if intents.CHOOSE_INQUIRY_LOCATION in request.intents:
+            print('User selected location: ' + str(request.intents[intents.CHOOSE_INQUIRY_LOCATION]['slots']['location']['value']))
+            return choose_inquiry_location(request, intents.CHOOSE_INQUIRY_LOCATION)
+
+
+class GenericInquiry(Beginning):
+    def reply(self, request: Request):
+        text = ('Записала. А что случилось?')
+        return self.make_response(text)
+
+
+class HouseInquiry(GenericInquiry):
+    def handle_local_intents(self, request: Request):
+        pass
+
+
+class ApartmentInquiry(GenericInquiry):
+    def handle_local_intents(self, request: Request):
+        pass
+
+
+class EntranceInquiry(GenericInquiry):
     def handle_local_intents(self, request: Request):
         pass
 
