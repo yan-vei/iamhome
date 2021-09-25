@@ -104,7 +104,7 @@ class Scene(ABC):
 class Beginning(Scene):
     def reply(self, request: Request):
         text = ('Здравствуйте! Я - помощник по проблемам с ЖКХ в вашем доме. \
-Хотите оформить заявку или проверить статус?')
+                    Хотите оформить заявку или проверить статус?')
         return self.make_response(text)
 
     def handle_global_intents(self, request):
@@ -126,10 +126,7 @@ class Help(Beginning):
         text = ('Давайте я подскажу вам, что я могу сделать. \
                     Например, я могу оформить заявку о засорившемся мусоропроводе, или, \
                     если вы уже создали заявку, я могу ее проверить. Хотите оформить заявку или проверить статус?')
-        return self.make_response(text, application_state={'report_id' : 1})
-
-    def handle_local_intents(self, request: Request):
-        pass
+        return self.make_response(text, application_state={'report_id': 1})
 
 
 class StartInquiry(Beginning):
@@ -193,14 +190,17 @@ class InquiryAccepted(DetailsCollector):
 class StartCheck(Beginning):
     def reply(self, request: Request):
         if request.session_state is not None:
-            text = ('Хорошо, давайте проверим вашу последнюю заявку под номером ' + request.session_state)
-            return self.make_response(text)
+            text = ('Хорошо, давайте проверим вашу последнюю заявку под номером ' + str(request.session_state) + '. Хотите сообщить об еще одной проблеме?')
         else:
             text = ('Пока что вы не оставляли никаких заявок. Хотите оставить свою первую заявку?')
-            return self.make_response(text)
+        return self.make_response(text)
 
     def handle_local_intents(self, request: Request):
-        pass
+        if intents.YANDEX_CONFIRM in request.intents:
+            print('User wants to create a new inquiry.')
+            return StartInquiry()
+        elif intents.YANDEX_REJECT in request.intents:
+            return End()
 
 
 class End(Beginning):
