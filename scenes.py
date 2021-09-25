@@ -172,8 +172,7 @@ class DetailsCollector(Beginning):
         return self.make_response(text)
 
     def handle_local_intents(self, request: Request):
-        entities = self.request_body['request'].get('entities', [])
-        print(entities)
+        print(request.entities)
         pass
 
 
