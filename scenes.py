@@ -191,10 +191,9 @@ class StartCheck(Beginning):
     def reply(self, request: Request):
         if request.session_state is not None:
             text = ('Хорошо, давайте проверим вашу последнюю заявку под номером ' + str(request.session_state) + '. Хотите сообщить об еще одной проблеме?')
-            return self.make_response(text)
         else:
             text = ('Пока что вы не оставляли никаких заявок. Хотите оставить свою первую заявку?')
-            return self.make_response(text)
+        return self.make_response(text)
 
     def handle_local_intents(self, request: Request):
         if intents.YANDEX_CONFIRM in request.intents:
