@@ -164,7 +164,7 @@ class EntranceInquiry(GenericInquiry):
 class StartCheck(Beginning):
     def reply(self, request: Request):
         if request.session_state is not None:
-            text = ('Хорошо, давайте проверим вашу последнюю заявку под номером ' + request.session_state)
+            text = ('Хорошо, давайте проверим вашу последнюю заявку под номером ' + request.session_state + '. Хотите сообщить об еще одной проблеме?')
             return self.make_response(text)
         else:
             text = ('Пока что вы не оставляли никаких заявок. Хотите оставить свою первую заявку?')
