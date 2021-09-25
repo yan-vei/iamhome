@@ -69,17 +69,22 @@ class Scene(ABC):
     def fallback(self, request: Request):
         return self.make_response('Извините, я вас не поняла. Пожалуйста, попробуйте повторить ваш ответ.')
 
-    def make_response(self, text, tts=None, card=None, state=None, buttons=None, directives=None):
+    def make_response(self, text, tts=None, card=None, state=None,
+                      buttons=None, directives=None, application_state=None, user_state=None, end_session=None):
         response = {
             'text': text,
             'tts': tts if tts is not None else text,
         }
+
         if card is not None:
             response['card'] = card
         if buttons is not None:
             response['buttons'] = buttons
         if directives is not None:
             response['directives'] = directives
+        if end_session is not None:
+            response['end_session'] = end_session
+
         webhook_response = {
             'response': response,
             'version': '1.0',
@@ -87,6 +92,10 @@ class Scene(ABC):
                 'scene': self.id(),
             },
         }
+        if user_state is not None:
+            webhook_response['user_state_update'] = user_state
+        if application_state is not None:
+            webhook_response['application_state'] = application_state
         if state is not None:
             webhook_response[STATE_RESPONSE_KEY].update(state)
         return webhook_response
@@ -117,7 +126,7 @@ class Help(Beginning):
         text = ('Давайте я подскажу вам, что я могу сделать. \
                     Например, я могу оформить заявку о засорившемся мусоропроводе, или, \
                     если вы уже создали заявку, я могу ее проверить. Хотите оформить заявку или проверить статус?')
-        return self.make_response(text)
+        return self.make_response(text, application_state={'report_id' : 1})
 
     def handle_local_intents(self, request: Request):
         pass
@@ -147,7 +156,9 @@ class HouseInquiry(GenericInquiry):
 
 class ApartmentInquiry(GenericInquiry):
     def handle_local_intents(self, request: Request):
-        pass
+        for intent in intents.APARTMENT_INTENTS:
+            if intent['intent_name'] in request.intents:
+                return DetailsCollector()
 
 
 class EntranceInquiry(GenericInquiry):
@@ -155,13 +166,47 @@ class EntranceInquiry(GenericInquiry):
         pass
 
 
-class StartCheck(Beginning):
+class DetailsCollector(Beginning):
     def reply(self, request: Request):
-        text = ('Хорошо, давайте проверим вашу последнюю заявку...')
+        text = ('Поняла вас. Подскажете адрес?')
         return self.make_response(text)
 
     def handle_local_intents(self, request: Request):
+        for entity in request.entities:
+            if entity['type'] == intents.YANDEX_GEO:
+                if 'street' in entity['value'].keys() and 'house_number' in entity['value'].keys():
+                    return InquiryAccepted()
+
+class InquiryAccepted(DetailsCollector):
+    def reply(self, request: Request):
+        text = ('Ваша заявка зарегистрирована. Спасибо за обращение! Хотите оформить еще одну заявку?')
+        return self.make_response(text)
+
+    def handle_local_intents(self, request: Request):
+        if intents.YANDEX_CONFIRM in request.intents:
+            print('User wants to create a new inquiry.')
+            return StartInquiry()
+        elif intents.YANDEX_REJECT in request.intents:
+            return End()
+
+
+class StartCheck(Beginning):
+    def reply(self, request: Request):
+        if request.session_state is not None:
+            text = ('Хорошо, давайте проверим вашу последнюю заявку под номером ' + request.session_state)
+            return self.make_response(text)
+        else:
+            text = ('Пока что вы не оставляли никаких заявок. Хотите оставить свою первую заявку?')
+            return self.make_response(text)
+
+    def handle_local_intents(self, request: Request):
         pass
+
+
+class End(Beginning):
+    def reply(self, request: Request):
+        text = ('Хорошо. До новых встреч!')
+        return self.make_response(text, end_session=True)
 
 
 def _list_scenes():
