@@ -126,10 +126,7 @@ class Help(Beginning):
         text = ('Давайте я подскажу вам, что я могу сделать. \
                     Например, я могу оформить заявку о засорившемся мусоропроводе, или, \
                     если вы уже создали заявку, я могу ее проверить. Хотите оформить заявку или проверить статус?')
-        return self.make_response(text, application_state={'report_id' : 1})
-
-    def handle_local_intents(self, request: Request):
-        pass
+        return self.make_response(text, application_state={'report_id': 1})
 
 
 class StartInquiry(Beginning):

@@ -13,8 +13,10 @@ class Request:
     def session_state(self):
         state = self.request_body['state']
         if state.get('user') is not None:
+            print("fetch user_state " + state.get('user', {}).get('report_id'))
             return state.get('user', {}).get('report_id')
         else:
+            print("fetch  application_state " + state.get('application', {}).get('report_id'))
             return state.get('application', {}).get('report_id')
 
     @property
