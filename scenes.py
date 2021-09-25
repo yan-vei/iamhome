@@ -153,12 +153,38 @@ class HouseInquiry(GenericInquiry):
 
 class ApartmentInquiry(GenericInquiry):
     def handle_local_intents(self, request: Request):
-        pass
+        for intent in intents.APARTMENT_INTENTS:
+            if intent['intent_name'] in request.intents:
+                return DetailsCollector()
 
 
 class EntranceInquiry(GenericInquiry):
     def handle_local_intents(self, request: Request):
         pass
+
+
+class DetailsCollector(Beginning):
+    def reply(self, request: Request):
+        text = ('Поняла вас. Подскажете адрес?')
+        return self.make_response(text)
+
+    def handle_local_intents(self, request: Request):
+        for entity in request.entities:
+            if entity['type'] == intents.YANDEX_GEO:
+                if 'street' in entity['value'].keys() and 'house_number' in entity['value'].keys():
+                    return InquiryAccepted()
+
+class InquiryAccepted(DetailsCollector):
+    def reply(self, request: Request):
+        text = ('Ваша заявка зарегистрирована. Спасибо за обращение! Хотите оформить еще одну заявку?')
+        return self.make_response(text)
+
+    def handle_local_intents(self, request: Request):
+        if intents.YANDEX_CONFIRM in request.intents:
+            print('User wants to create a new inquiry.')
+            return StartInquiry()
+        elif intents.YANDEX_REJECT in request.intents:
+            return End()
 
 
 class StartCheck(Beginning):
@@ -167,11 +193,17 @@ class StartCheck(Beginning):
             text = ('Хорошо, давайте проверим вашу последнюю заявку под номером ' + request.session_state + '. Хотите сообщить об еще одной проблеме?')
             return self.make_response(text)
         else:
-            text = ('Пока что вы не оставляли никаких заявок. Хотите оставить свою заявку?')
+            text = ('Пока что вы не оставляли никаких заявок. Хотите оставить свою первую заявку?')
             return self.make_response(text)
 
     def handle_local_intents(self, request: Request):
         pass
+
+
+class End(Beginning):
+    def reply(self, request: Request):
+        text = ('Хорошо. До новых встреч!')
+        return self.make_response(text, end_session=True)
 
 
 def _list_scenes():

@@ -20,5 +20,9 @@ class Request:
             return state.get('application', {}).get('report_id')
 
     @property
+    def entities(self):
+        return self.request_body['request'].get('nlu', {}).get('entities', {})
+
+    @property
     def type(self):
         return self.request_body.get('request', {}).get('type')
