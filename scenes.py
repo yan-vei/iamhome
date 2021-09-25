@@ -174,7 +174,6 @@ class DetailsCollector(Beginning):
     def handle_local_intents(self, request: Request):
         for entity in request.entities:
             if entity['type'] == intents.YANDEX_GEO:
-                print('User set the address as ' + entity['value'])
                 if 'street' in entity['value'].keys() and 'house_number' in entity['value'].keys():
                     return InquiryAccepted()
 
