@@ -18,5 +18,12 @@ class Request:
             return state.get('application', {}).get('report_id')
 
     @property
+    def requested_entities(self):
+        entities = self.request_body['request'].get('entities', {})
+        if entities != {}:
+            return entities
+        return {}
+
+    @property
     def type(self):
         return self.request_body.get('request', {}).get('type')
