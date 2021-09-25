@@ -12,10 +12,10 @@ class Request:
     @property
     def session_state(self):
         state = self.request_body['state']
-        if state.get('user'):
-            return state.get('user', {})
+        if state.get('user') is not None:
+            return state.get('user', {}).get('report_id')
         else:
-            return state.get('application', {})
+            return state.get('application', {}).get('report_id')
 
     @property
     def type(self):

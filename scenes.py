@@ -37,21 +37,21 @@ class Scene(ABC):
         return self.make_response('Извините, я вас не поняла. Пожалуйста, попробуйте повторить ваш ответ.')
 
     def make_response(self, text, tts=None, card=None, state=None,
-                      buttons=None, directives=None, application_state=None, user_state=None):
+                      buttons=None, directives=None, application_state=None, user_state=None, end_session=None):
         response = {
             'text': text,
             'tts': tts if tts is not None else text,
         }
+
         if card is not None:
             response['card'] = card
         if buttons is not None:
             response['buttons'] = buttons
         if directives is not None:
             response['directives'] = directives
-        if application_state is not None:
-            response['application_state'] = application_state
-        if user_state is not None:
-            response['user_state_update'] = user_state
+        if end_session is not None:
+            response['end_session'] = end_session
+
         webhook_response = {
             'response': response,
             'version': '1.0',
@@ -59,6 +59,10 @@ class Scene(ABC):
                 'scene': self.id(),
             },
         }
+        if user_state is not None:
+            webhook_response['user_state_update'] = user_state
+        if application_state is not None:
+            webhook_response['application_state'] = application_state
         if state is not None:
             webhook_response[STATE_RESPONSE_KEY].update(state)
         return webhook_response
@@ -117,8 +121,12 @@ class StartInquiry(Beginning):
 
 class StartCheck(Beginning):
     def reply(self, request: Request):
-        text = ('Хорошо, давайте проверим вашу последнюю заявку...')
-        return self.make_response(text)
+        if request.session_state is not None:
+            text = ('Хорошо, давайте проверим вашу последнюю заявку под номером ' + request.session_state)
+            return self.make_response(text)
+        else:
+            text = ('Пока что вы не оставляли никаких заявок. Хотите оставить свою первую заявку?')
+            return self.make_response(text)
 
     def handle_local_intents(self, request: Request):
         pass
