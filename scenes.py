@@ -76,18 +76,17 @@ class Beginning(Scene):
         return self.make_response(text)
 
     def handle_global_intents(self, request):
+        if intents.YANDEX_HELP in request.intents:
+            print('User requested help.')
+            return Help()
+
+    def handle_local_intents(self, request: Request):
         if intents.CREATE_INQUIRY in request.intents:
             print('User wants to create an inquiry.')
             return StartInquiry()
         elif intents.CHECK_INQUIRY in request.intents:
             print('User wants to check inquiry.')
             return StartCheck()
-        elif intents.YANDEX_HELP in request.intents:
-            print('User requested help.')
-            return Help()
-
-    def handle_local_intents(self, request: Request):
-        pass
 
 
 class Help(Beginning):
