@@ -19,7 +19,7 @@ class Request:
 
     @property
     def entities(self):
-        return self.request_body['request'].get('entities', [])
+        return self.request_body['request'].get('nlu', {}).get('entities', {})
 
     @property
     def type(self):
