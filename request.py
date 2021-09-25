@@ -19,10 +19,10 @@ class Request:
 
     @property
     def requested_entities(self):
-        entities = self.request_body['request'].get('entities', {})
-        if entities != {}:
+        entities = self.request_body['request'].get('entities', [])
+        if entities != []:
             return entities
-        return {}
+        return []
 
     @property
     def type(self):

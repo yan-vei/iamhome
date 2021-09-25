@@ -172,7 +172,7 @@ class DetailsCollector(Beginning):
         return self.make_response(text)
 
     def handle_local_intents(self, request: Request):
-        if request.requested_entities != {}:
+        if request.requested_entities != []:
             print(request.requested_entities)
 
 
