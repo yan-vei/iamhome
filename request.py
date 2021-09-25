@@ -10,5 +10,13 @@ class Request:
         return self.request_body['request'].get('nlu', {}).get('intents', {})
 
     @property
+    def session_state(self):
+        state = self.request_body['state']
+        if state.get('user') is not None:
+            return state.get('user', {}).get('report_id')
+        else:
+            return state.get('application', {}).get('report_id')
+
+    @property
     def type(self):
         return self.request_body.get('request', {}).get('type')
