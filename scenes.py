@@ -104,7 +104,7 @@ class Scene(ABC):
 class Beginning(Scene):
     def reply(self, request: Request):
         text = ('Здравствуйте! Я - помощник по проблемам с ЖКХ в вашем доме. \
-Хотите оформить заявку или проверить статус?')
+                    Хотите оформить заявку или проверить статус?')
         return self.make_response(text)
 
     def handle_global_intents(self, request):
@@ -197,7 +197,11 @@ class StartCheck(Beginning):
             return self.make_response(text)
 
     def handle_local_intents(self, request: Request):
-        pass
+        if intents.YANDEX_CONFIRM in request.intents:
+            print('User wants to create a new inquiry.')
+            return StartInquiry()
+        elif intents.YANDEX_REJECT in request.intents:
+            return End()
 
 
 class End(Beginning):
