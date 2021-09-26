@@ -6,6 +6,7 @@ import sys
 from request import Request
 from entities import Location
 from state import STATE_RESPONSE_KEY
+from answers import add_positive_answer
 import intents
 
 
@@ -51,6 +52,7 @@ class Scene(ABC):
 
     def make_response(self, text, tts=None, card=None, state=None,
                       buttons=None, directives=None, application_state=None, user_state=None, end_session=None):
+
         response = {
             'text': text,
             'tts': tts if tts is not None else text,
@@ -106,12 +108,12 @@ class Help(Beginning):
         text = ('Давайте я подскажу вам, что я могу сделать. \
                     Например, я могу оформить заявку о засорившемся мусоропроводе, или, \
                     если вы уже создали заявку, я могу ее проверить. Хотите оформить заявку или проверить статус?')
-        return self.make_response(text, application_state={'report_id': 1})
+        return self.make_response(text)
 
 
 class StartInquiry(Beginning):
     def reply(self, request: Request):
-        text = ('Хорошо, давайте оформим заявку. Где проблема: в доме или в квартире?')
+        text = add_positive_answer('Давайте оформим заявку. Где проблема: в доме или в квартире?')
         return self.make_response(text)
 
     def handle_local_intents(self, request: Request):
@@ -122,7 +124,7 @@ class StartInquiry(Beginning):
 
 class GenericInquiry(Beginning):
     def reply(self, request: Request):
-        text = ('Записала. А что случилось?')
+        text = add_positive_answer('А что случилось?')
         return self.make_response(text)
 
 
@@ -145,7 +147,7 @@ class EntranceInquiry(GenericInquiry):
 
 class DetailsCollector(Beginning):
     def reply(self, request: Request):
-        text = ('Поняла вас. Подскажете адрес?')
+        text = add_positive_answer('Подскажете адрес?')
         return self.make_response(text)
 
     def handle_local_intents(self, request: Request):
@@ -171,7 +173,7 @@ class InquiryAccepted(DetailsCollector):
 class StartCheck(Beginning):
     def reply(self, request: Request):
         if request.session_state is not None:
-            text = ('Хорошо, давайте проверим вашу последнюю заявку под номером ' + str(request.session_state) + '. Хотите сообщить об еще одной проблеме?')
+            text = add_positive_answer('Давайте проверим вашу последнюю заявку под номером ' + str(request.session_state) + '. Хотите сообщить об еще одной проблеме?')
         else:
             text = ('Пока что вы не оставляли никаких заявок. Хотите оставить свою первую заявку?')
         return self.make_response(text)
@@ -186,7 +188,7 @@ class StartCheck(Beginning):
 
 class End(Beginning):
     def reply(self, request: Request):
-        text = ('Хорошо. До новых встреч!')
+        text = add_positive_answer('До новых встреч!')
         return self.make_response(text, end_session=True)
 
 
