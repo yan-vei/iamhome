@@ -94,7 +94,7 @@ class Beginning(Scene):
         else:
             text = ('Здравствуйте! Я - помощник по проблемам с ЖКХ в вашем доме. \
                     Хотите оформить заявку или проверить статус?')
-        return self.make_response(text, application_state={'report_id': None})
+        return self.make_response(text, application_state={})
 
     def handle_global_intents(self, request):
         if intents.YANDEX_HELP in request.intents or intents.LEARN_MORE in request.intents:
