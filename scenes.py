@@ -2,31 +2,11 @@ from abc import ABC, abstractmethod
 from typing import Optional
 import inspect
 import sys
-import enum
 
 from request import Request
+from entities import Location
 from state import STATE_RESPONSE_KEY
 import intents
-
-
-# Entities
-class Location(enum.Enum):
-    UNKNOWN = 1
-    APARTMENT = 2
-    HOUSE = 3
-    ENTRANCE = 4
-
-    @classmethod
-    def from_request(cls, request: Request, intent_name: str):
-        slot = request.intents[intent_name]['slots']['location']['value']
-        if slot == 'apartment':
-            return cls.APARTMENT
-        elif slot == 'house':
-            return cls.HOUSE
-        elif slot == 'entrance':
-            return cls.ENTRANCE
-        else:
-            return cls.UNKNOWN
 
 
 # Выбор локации, по которой обращается пользователь
@@ -173,6 +153,7 @@ class DetailsCollector(Beginning):
             if entity['type'] == intents.YANDEX_GEO:
                 if 'street' in entity['value'].keys() and 'house_number' in entity['value'].keys():
                     return InquiryAccepted()
+
 
 class InquiryAccepted(DetailsCollector):
     def reply(self, request: Request):
