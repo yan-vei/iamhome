@@ -88,13 +88,13 @@ class Beginning(Scene):
         last_inquiry = ''
         if request.session_state is not None:
             # вставить API вызов для проверки статуса
-            last_inquiry = ('Статус вашей последней заявки...')
+            last_inquiry = ('Статус вашей последней заявки... ')
         if last_inquiry != '':
             text = last_inquiry + 'Хотите оформить новую заявку или узнать больше о том, что я умею?'
         else:
             text = ('Здравствуйте! Я - помощник по проблемам с ЖКХ в вашем доме. \
                     Хотите оформить заявку или проверить статус?')
-        return self.make_response(text)
+        return self.make_response(text, application_state=None)
 
     def handle_global_intents(self, request):
         if intents.YANDEX_HELP in request.intents or intents.LEARN_MORE in request.intents:
