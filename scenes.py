@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 from typing import Optional
 import inspect
 import sys
+import datetime
 
 from request import Request
 from entities import Location
@@ -143,8 +144,30 @@ class HouseInquiry(GenericInquiry):
 class ApartmentInquiry(GenericInquiry):
     def handle_local_intents(self, request: Request):
         for intent in intents.APARTMENT_INTENTS:
-            if intent['intent_name'] in request.intents:
+            if intent['intent_name'] in request.intents and 'date_restriction' in intent.keys():
+                if not _is_in_range(intent['data_restriction']):
+                    return FailedInquiry('об этом можно сообщить только в период ' + str(intent['data_restriction']) + ".")
+                else:
+                    return DetailsCollector()
+            elif intent['intent_name'] in request.intents and 'date_restriction' not in intent.keys():
                 return DetailsCollector()
+
+
+class FailedInquiry(ApartmentInquiry):
+    def __init__(self, reason):
+        self.reason = reason
+
+    def reply(self, request: Request):
+        text = ('Извините, но ')
+        response = text + self.reason + ' Хотите оформить другую заявку?'
+        return self.make_response(response)
+
+    def handle_local_intents(self, request: Request):
+        if intents.YANDEX_CONFIRM in request.intents:
+            print('User wants to create a new inquiry.')
+            return StartInquiry()
+        elif intents.YANDEX_REJECT in request.intents:
+            return End()
 
 
 class EntranceInquiry(GenericInquiry):
@@ -166,6 +189,7 @@ class DetailsCollector(Beginning):
 
 class InquiryAccepted(DetailsCollector):
     def reply(self, request: Request):
+        # Вставить вызов API с регистрацией заявки
         text = ('Ваша заявка зарегистрирована. Спасибо за обращение! Хотите оформить еще одну заявку?')
         return self.make_response(text)
 
@@ -208,6 +232,11 @@ def _list_scenes():
         if inspect.isclass(obj) and issubclass(obj, Scene):
             scenes.append(obj)
     return scenes
+
+def _is_in_range(restriction):
+    today = datetime.date.today().strftime("%d/%m")
+    start, finish = restriction.split('-')[0], restriction.split('-')[1]
+    return start <= today <= finish
 
 
 SCENES = {
