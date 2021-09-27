@@ -85,12 +85,19 @@ class Scene(ABC):
 
 class Beginning(Scene):
     def reply(self, request: Request):
-        text = ('Здравствуйте! Я - помощник по проблемам с ЖКХ в вашем доме. \
+        last_inquiry = ''
+        if request.session_state is not None:
+            # вставить API вызов для проверки статуса
+            last_inquiry = ('Статус вашей последней заявки... ')
+        if last_inquiry != '':
+            text = last_inquiry + 'Хотите оформить новую заявку или узнать больше о том, что я умею?'
+        else:
+            text = ('Здравствуйте! Я - помощник по проблемам с ЖКХ в вашем доме. \
                     Хотите оформить заявку или проверить статус?')
         return self.make_response(text)
 
     def handle_global_intents(self, request):
-        if intents.YANDEX_HELP in request.intents:
+        if intents.YANDEX_HELP in request.intents or intents.LEARN_MORE in request.intents:
             print('User requested help.')
             return Help()
 
@@ -174,6 +181,8 @@ class StartCheck(Beginning):
     def reply(self, request: Request):
         if request.session_state is not None:
             text = add_positive_answer('Давайте проверим вашу последнюю заявку под номером ' + str(request.session_state) + '. Хотите сообщить об еще одной проблеме?')
+        # вставить вызов API
+        # проверить статус, в зависимости от статуса составить ответ, обновить хранилище состояний, если нужно
         else:
             text = ('Пока что вы не оставляли никаких заявок. Хотите оставить свою первую заявку?')
         return self.make_response(text)
