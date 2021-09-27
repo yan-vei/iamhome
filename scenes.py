@@ -146,7 +146,7 @@ class ApartmentInquiry(GenericInquiry):
         for intent in intents.APARTMENT_INTENTS:
             if intent['intent_name'] in request.intents and 'date_restriction' in intent.keys():
                 if not _is_in_range(intent['date_restriction']):
-                    return FailedInquiry('об этом можно сообщить только в период ' + str(intent['data_restriction']) + ".")
+                    return FailedInquiry('об этом можно сообщить только в период ' + str(intent['date_restriction']) + ".")
                 else:
                     return DetailsCollector()
             elif intent['intent_name'] in request.intents and 'date_restriction' not in intent.keys():
