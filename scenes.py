@@ -130,7 +130,6 @@ class InquiryLocationCollector(Beginning):
         for intent in intents.PROBLEM_INTENTS:
             if intent['intent_name'] in request.intents and 'date_restriction' in intent.keys():
                 if not _is_in_range(intent['date_restriction']):
-                    print(_is_in_range(intent['date_restriction']))
                     return FailedInquiry('об этом можно сообщить только в период ' + str(intent['date_restriction']) + ".")
                 else:
                     return InquiryAddressCollector(intent['intent_name'])
