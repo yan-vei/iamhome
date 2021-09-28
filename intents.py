@@ -13,7 +13,7 @@ YANDEX_GEO = 'YANDEX.GEO'
 CHOOSE_INQUIRY_LOCATION = 'chooseInquiryLocation'
 
 # Интенты по категориям проблем
-PROBLEM_INTENTS = [{'intent_name': 'lowTempApartment', 'category_id': 1, 'subcategory_id': 1, 'date_restriction': '15/10-12/05',
+PROBLEM_INTENTS = [{'intent_name': 'lowTempApartment', 'category_id': 1, 'subcategory_id': 1, 'date_restriction': '15/09-12/05',
                     'location': 2}]
 
 # LOCATION CODES:
