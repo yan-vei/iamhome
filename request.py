@@ -20,7 +20,7 @@ class Request:
     @property
     def user_problem(self):
         state = self.request_body['state']
-        return(state.get('session'), {}.get('user_problem'))
+        return(state.get('session', {}).get('user_problem'))
         #if state.get('session').get('user_problem') is not None:
             #return state.get('session', {}).get('user_problem')
 
