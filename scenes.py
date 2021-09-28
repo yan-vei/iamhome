@@ -137,23 +137,6 @@ class InquiryLocationCollector(Beginning):
                 return InquiryAddressCollector(intent['intent_name'])
 
 
-class FailedInquiry(InquiryLocationCollector):
-    def __init__(self, reason=None):
-        self.reason = reason
-
-    def reply(self, request: Request):
-        text = 'Извините, но '
-        response = text + self.reason + ' Хотите оформить другую заявку?'
-        return self.make_response(response)
-
-    def handle_local_intents(self, request: Request):
-        if intents.YANDEX_CONFIRM in request.intents:
-            print('User wants to create a new inquiry.')
-            return StartInquiry()
-        elif intents.YANDEX_REJECT in request.intents:
-            return End()
-
-
 class InquiryAddressCollector(Beginning):
     def __init__(self, user_problem=None):
         self.user_problem = user_problem
@@ -171,9 +154,27 @@ class InquiryAddressCollector(Beginning):
 
 class InquiryAccepted(InquiryAddressCollector):
     def reply(self, request: Request):
+        print(request.user_problem)
         # Вставить вызов API с регистрацией заявки и обновлением статуса в хранилище состояний
         text = ('Ваша заявка зарегистрирована. Спасибо за обращение! Хотите оформить еще одну заявку?')
         return self.make_response(text)
+
+    def handle_local_intents(self, request: Request):
+        if intents.YANDEX_CONFIRM in request.intents:
+            print('User wants to create a new inquiry.')
+            return StartInquiry()
+        elif intents.YANDEX_REJECT in request.intents:
+            return End()
+
+
+class FailedInquiry(InquiryLocationCollector):
+    def __init__(self, reason=None):
+        self.reason = reason
+
+    def reply(self, request: Request):
+        text = 'Извините, но '
+        response = text + self.reason + ' Хотите оформить другую заявку?'
+        return self.make_response(response)
 
     def handle_local_intents(self, request: Request):
         if intents.YANDEX_CONFIRM in request.intents:
