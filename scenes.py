@@ -95,7 +95,7 @@ class Beginning(Scene):
         else:
             text = ('Здравствуйте! Я - помощник по проблемам с ЖКХ в вашем доме. \
                     Хотите оформить заявку или проверить статус?')
-        return self.make_response(text)
+        return self.make_response(text, application_state={'report_id': 1})
 
     def handle_global_intents(self, request):
         if intents.YANDEX_HELP in request.intents or intents.LEARN_MORE in request.intents:
@@ -232,6 +232,7 @@ def _list_scenes():
         if inspect.isclass(obj) and issubclass(obj, Scene):
             scenes.append(obj)
     return scenes
+
 
 def _is_in_range(restriction):
     today = datetime.date.today().strftime("%d/%m")
