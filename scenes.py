@@ -87,7 +87,7 @@ class Scene(ABC):
 class Beginning(Scene):
     def reply(self, request: Request):
         last_inquiry = ''
-        if request.session_state is not None:
+        if request.report_state is not None:
             # вставить API вызов для проверки статуса
             last_inquiry = ('Статус вашей последней заявки... ')
         if last_inquiry != '':
@@ -203,7 +203,7 @@ class InquiryAccepted(DetailsCollector):
 
 class StartCheck(Beginning):
     def reply(self, request: Request):
-        if request.session_state is not None:
+        if request.report_state is not None:
             text = add_positive_answer('Давайте проверим вашу последнюю заявку под номером ' + str(request.session_state) + '. Хотите сообщить об еще одной проблеме?')
         # вставить вызов API
         # проверить статус, в зависимости от статуса составить ответ, обновить хранилище состояний, если нужно
