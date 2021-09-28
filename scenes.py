@@ -143,7 +143,7 @@ class InquiryAddressCollector(Beginning):
 
     def reply(self, request: Request):
         text = add_positive_answer('Подскажете адрес?')
-        return self.make_response(text, user_problem=self.user_problem)
+        return self.make_response(text)
 
     def handle_local_intents(self, request: Request):
         for entity in request.entities:
