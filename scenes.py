@@ -11,17 +11,6 @@ from answers import add_positive_answer
 import intents
 
 
-# Выбор локации, по которой обращается пользователь
-def choose_inquiry_location(request: Request, intent_name: str):
-    location = Location.from_request(request, intent_name)
-    if location == Location.HOUSE:
-        return HouseInquiry()
-    elif location == Location.APARTMENT:
-        return ApartmentInquiry()
-    elif location == Location.ENTRANCE:
-        return EntranceInquiry()
-
-
 class Scene(ABC):
 
     @classmethod
@@ -52,7 +41,7 @@ class Scene(ABC):
         return self.make_response('Извините, я вас не поняла. Пожалуйста, попробуйте повторить ваш ответ.')
 
     def make_response(self, text, tts=None, card=None, state=None,
-                      buttons=None, directives=None, application_state=None, user_state=None, end_session=None):
+                      buttons=None, directives=None, application_state=None, user_state=None, user_problem=None, end_session=None):
 
         response = {
             'text': text,
@@ -79,6 +68,8 @@ class Scene(ABC):
             webhook_response['user_state_update'] = user_state
         if application_state is not None:
             webhook_response['application_state'] = application_state
+        if user_problem is not None:
+            webhook_response[STATE_RESPONSE_KEY]['user_problem'] = user_problem
         if state is not None:
             webhook_response[STATE_RESPONSE_KEY].update(state)
         return webhook_response
@@ -95,7 +86,7 @@ class Beginning(Scene):
         else:
             text = ('Здравствуйте! Я - помощник по проблемам с ЖКХ в вашем доме. \
                     Хотите оформить заявку или проверить статус?')
-        return self.make_response(text, application_state={})
+        return self.make_response(text)
 
     def handle_global_intents(self, request):
         if intents.YANDEX_HELP in request.intents or intents.LEARN_MORE in request.intents:
@@ -127,38 +118,31 @@ class StartInquiry(Beginning):
     def handle_local_intents(self, request: Request):
         if intents.CHOOSE_INQUIRY_LOCATION in request.intents:
             print('User selected location: ' + str(request.intents[intents.CHOOSE_INQUIRY_LOCATION]['slots']['location']['value']))
-            return choose_inquiry_location(request, intents.CHOOSE_INQUIRY_LOCATION)
+            return InquiryLocationCollector()
 
 
-class GenericInquiry(Beginning):
+class InquiryLocationCollector(Beginning):
     def reply(self, request: Request):
         text = add_positive_answer('А что случилось?')
         return self.make_response(text)
 
-
-class HouseInquiry(GenericInquiry):
     def handle_local_intents(self, request: Request):
-        pass
-
-
-class ApartmentInquiry(GenericInquiry):
-    def handle_local_intents(self, request: Request):
-        for intent in intents.APARTMENT_INTENTS:
+        for intent in intents.PROBLEM_INTENTS:
             if intent['intent_name'] in request.intents and 'date_restriction' in intent.keys():
                 if not _is_in_range(intent['date_restriction']):
                     return FailedInquiry('об этом можно сообщить только в период ' + str(intent['date_restriction']) + ".")
                 else:
-                    return DetailsCollector()
+                    return InquiryAddressCollector(intent['intent_name'])
             elif intent['intent_name'] in request.intents and 'date_restriction' not in intent.keys():
-                return DetailsCollector()
+                return InquiryAddressCollector(intent['intent_name'])
 
 
-class FailedInquiry(ApartmentInquiry):
+class FailedInquiry(InquiryLocationCollector):
     def __init__(self, reason=None):
         self.reason = reason
 
     def reply(self, request: Request):
-        text = ('Извините, но ')
+        text = 'Извините, но '
         response = text + self.reason + ' Хотите оформить другую заявку?'
         return self.make_response(response)
 
@@ -170,15 +154,13 @@ class FailedInquiry(ApartmentInquiry):
             return End()
 
 
-class EntranceInquiry(GenericInquiry):
-    def handle_local_intents(self, request: Request):
-        pass
+class InquiryAddressCollector(Beginning):
+    def __init__(self, user_problem):
+        self.user_problem = user_problem
 
-
-class DetailsCollector(Beginning):
     def reply(self, request: Request):
         text = add_positive_answer('Подскажете адрес?')
-        return self.make_response(text)
+        return self.make_response(text, user_problem=self.user_problem)
 
     def handle_local_intents(self, request: Request):
         for entity in request.entities:
@@ -187,9 +169,9 @@ class DetailsCollector(Beginning):
                     return InquiryAccepted()
 
 
-class InquiryAccepted(DetailsCollector):
+class InquiryAccepted(InquiryAddressCollector):
     def reply(self, request: Request):
-        # Вставить вызов API с регистрацией заявки
+        # Вставить вызов API с регистрацией заявки и обновлением статуса в хранилище состояний
         text = ('Ваша заявка зарегистрирована. Спасибо за обращение! Хотите оформить еще одну заявку?')
         return self.make_response(text)
 
