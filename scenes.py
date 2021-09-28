@@ -220,8 +220,18 @@ def _list_scenes():
 def _is_in_range(restriction):
     today = datetime.datetime.now()
     year = today.strftime("%Y")
-    start_str = restriction.split('-')[0] + '/' + year
-    finish_str = restriction.split('-')[1] + '/' + year
+
+    start_date = restriction.split('-')[0]
+    finish_date = restriction.split('-')[1]
+
+    start_month = start_date.split('/')[1]
+    end_month = finish_date.split('/')[1]
+
+    start_str = start_date + '/' + year
+    if start_month > end_month:
+        year = str(int(year) + 1)
+    finish_str = finish_date + '/' + year
+
     start = datetime.datetime.strptime(start_str, "%d/%m/%Y")
     finish = datetime.datetime.strptime(finish_str, "%d/%m/%Y")
     return start <= today <= finish
