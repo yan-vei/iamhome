@@ -10,12 +10,17 @@ class Request:
         return self.request_body['request'].get('nlu', {}).get('intents', {})
 
     @property
-    def session_state(self):
+    def report_state(self):
         state = self.request_body['state']
         if state.get('user').get('report_id') is not None:
             return state.get('user', {}).get('report_id')
         else:
             return state.get('application', {}).get('report_id')
+
+    @property
+    def user_problem(self):
+        state = self.request_body['state']
+        return state.get('session', {}).get('user_problem')
 
     @property
     def entities(self):

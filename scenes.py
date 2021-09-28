@@ -2,23 +2,13 @@ from abc import ABC, abstractmethod
 from typing import Optional
 import inspect
 import sys
+import datetime
 
 from request import Request
 from entities import Location
 from state import STATE_RESPONSE_KEY
 from answers import add_positive_answer
 import intents
-
-
-# Выбор локации, по которой обращается пользователь
-def choose_inquiry_location(request: Request, intent_name: str):
-    location = Location.from_request(request, intent_name)
-    if location == Location.HOUSE:
-        return HouseInquiry()
-    elif location == Location.APARTMENT:
-        return ApartmentInquiry()
-    elif location == Location.ENTRANCE:
-        return EntranceInquiry()
 
 
 class Scene(ABC):
@@ -51,7 +41,7 @@ class Scene(ABC):
         return self.make_response('Извините, я вас не поняла. Пожалуйста, попробуйте повторить ваш ответ.')
 
     def make_response(self, text, tts=None, card=None, state=None,
-                      buttons=None, directives=None, application_state=None, user_state=None, end_session=None):
+                      buttons=None, directives=None, application_state=None, user_state=None, user_problem=None, end_session=None):
 
         response = {
             'text': text,
@@ -78,6 +68,8 @@ class Scene(ABC):
             webhook_response['user_state_update'] = user_state
         if application_state is not None:
             webhook_response['application_state'] = application_state
+        if user_problem is not None:
+            webhook_response[STATE_RESPONSE_KEY]['user_problem'] = user_problem
         if state is not None:
             webhook_response[STATE_RESPONSE_KEY].update(state)
         return webhook_response
@@ -86,7 +78,7 @@ class Scene(ABC):
 class Beginning(Scene):
     def reply(self, request: Request):
         last_inquiry = ''
-        if request.session_state is not None:
+        if request.report_state is not None:
             # вставить API вызов для проверки статуса
             last_inquiry = ('Статус вашей последней заявки... ')
         if last_inquiry != '':
@@ -126,36 +118,32 @@ class StartInquiry(Beginning):
     def handle_local_intents(self, request: Request):
         if intents.CHOOSE_INQUIRY_LOCATION in request.intents:
             print('User selected location: ' + str(request.intents[intents.CHOOSE_INQUIRY_LOCATION]['slots']['location']['value']))
-            return choose_inquiry_location(request, intents.CHOOSE_INQUIRY_LOCATION)
+            return InquiryLocationCollector()
 
 
-class GenericInquiry(Beginning):
+class InquiryLocationCollector(Beginning):
     def reply(self, request: Request):
         text = add_positive_answer('А что случилось?')
         return self.make_response(text)
 
-
-class HouseInquiry(GenericInquiry):
     def handle_local_intents(self, request: Request):
-        pass
+        for intent in intents.PROBLEM_INTENTS:
+            if intent['intent_name'] in request.intents and 'date_restriction' in intent.keys():
+                if not _is_in_range(intent['date_restriction']):
+                    return FailedInquiry('об этом можно сообщить только в период ' + str(intent['date_restriction']) + ".")
+                else:
+                    return InquiryAddressCollector(intent['intent_name'])
+            elif intent['intent_name'] in request.intents and 'date_restriction' not in intent.keys():
+                return InquiryAddressCollector(intent['intent_name'])
 
 
-class ApartmentInquiry(GenericInquiry):
-    def handle_local_intents(self, request: Request):
-        for intent in intents.APARTMENT_INTENTS:
-            if intent['intent_name'] in request.intents:
-                return DetailsCollector()
+class InquiryAddressCollector(Beginning):
+    def __init__(self, user_problem=None):
+        self.user_problem = user_problem
 
-
-class EntranceInquiry(GenericInquiry):
-    def handle_local_intents(self, request: Request):
-        pass
-
-
-class DetailsCollector(Beginning):
     def reply(self, request: Request):
         text = add_positive_answer('Подскажете адрес?')
-        return self.make_response(text)
+        return self.make_response(text, user_problem=self.user_problem)
 
     def handle_local_intents(self, request: Request):
         for entity in request.entities:
@@ -164,8 +152,10 @@ class DetailsCollector(Beginning):
                     return InquiryAccepted()
 
 
-class InquiryAccepted(DetailsCollector):
+class InquiryAccepted(InquiryAddressCollector):
     def reply(self, request: Request):
+        user_problem = request.user_problem
+        # Вставить вызов API с регистрацией заявки и обновлением статуса в хранилище состояний
         text = ('Ваша заявка зарегистрирована. Спасибо за обращение! Хотите оформить еще одну заявку?')
         return self.make_response(text)
 
@@ -177,9 +167,26 @@ class InquiryAccepted(DetailsCollector):
             return End()
 
 
+class FailedInquiry(InquiryLocationCollector):
+    def __init__(self, reason=None):
+        self.reason = reason
+
+    def reply(self, request: Request):
+        text = 'Извините, но '
+        response = text + self.reason + ' Хотите оформить другую заявку?'
+        return self.make_response(response)
+
+    def handle_local_intents(self, request: Request):
+        if intents.YANDEX_CONFIRM in request.intents:
+            print('User wants to create a new inquiry.')
+            return StartInquiry()
+        elif intents.YANDEX_REJECT in request.intents:
+            return End()
+
+
 class StartCheck(Beginning):
     def reply(self, request: Request):
-        if request.session_state is not None:
+        if request.report_state is not None:
             text = add_positive_answer('Давайте проверим вашу последнюю заявку под номером ' + str(request.session_state) + '. Хотите сообщить об еще одной проблеме?')
         # вставить вызов API
         # проверить статус, в зависимости от статуса составить ответ, обновить хранилище состояний, если нужно
@@ -208,6 +215,26 @@ def _list_scenes():
         if inspect.isclass(obj) and issubclass(obj, Scene):
             scenes.append(obj)
     return scenes
+
+
+def _is_in_range(restriction):
+    today = datetime.datetime.now()
+    year = today.strftime("%Y")
+
+    start_date = restriction.split('-')[0]
+    finish_date = restriction.split('-')[1]
+
+    start_month = start_date.split('/')[1]
+    end_month = finish_date.split('/')[1]
+
+    start_str = start_date + '/' + year
+    if start_month > end_month:
+        year = str(int(year) + 1)
+    finish_str = finish_date + '/' + year
+
+    start = datetime.datetime.strptime(start_str, "%d/%m/%Y")
+    finish = datetime.datetime.strptime(finish_str, "%d/%m/%Y")
+    return start <= today <= finish
 
 
 SCENES = {
