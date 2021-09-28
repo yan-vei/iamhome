@@ -155,7 +155,7 @@ class FailedInquiry(InquiryLocationCollector):
 
 
 class InquiryAddressCollector(Beginning):
-    def __init__(self, user_problem):
+    def __init__(self, user_problem=None):
         self.user_problem = user_problem
 
     def reply(self, request: Request):
