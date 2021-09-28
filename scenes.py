@@ -143,7 +143,7 @@ class InquiryAddressCollector(Beginning):
 
     def reply(self, request: Request):
         text = add_positive_answer('Подскажете адрес?')
-        return self.make_response(text)
+        return self.make_response(text, user_problem=self.user_problem)
 
     def handle_local_intents(self, request: Request):
         for entity in request.entities:
@@ -154,7 +154,7 @@ class InquiryAddressCollector(Beginning):
 
 class InquiryAccepted(InquiryAddressCollector):
     def reply(self, request: Request):
-        print(request.user_problem)
+        user_problem = request.user_problem
         # Вставить вызов API с регистрацией заявки и обновлением статуса в хранилище состояний
         text = ('Ваша заявка зарегистрирована. Спасибо за обращение! Хотите оформить еще одну заявку?')
         return self.make_response(text)
