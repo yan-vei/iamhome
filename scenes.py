@@ -118,7 +118,7 @@ class StartInquiry(Beginning):
     def handle_local_intents(self, request: Request):
         if intents.CHOOSE_INQUIRY_LOCATION in request.intents:
             print('User selected location: ' + str(request.intents[intents.CHOOSE_INQUIRY_LOCATION]['slots']['location']['value']))
-            location_id = entities.choose_location(request, request.intents[intents.CHOOSE_INQUIRY_LOCATION]['slots']['location']['value'])
+            location_id = entities.choose_location(request, intents.CHOOSE_INQUIRY_LOCATION)
             print(location_id)
             return InquiryLocationCollector()
 
