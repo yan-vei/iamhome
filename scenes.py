@@ -126,7 +126,7 @@ class StartInquiry(Beginning):
 
 
 class InquiryLocationCollector(Beginning):
-    def __init__self(self, location=None):
+    def __init__(self, location=None):
         location = self.location
 
     def reply(self, request: Request):
