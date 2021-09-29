@@ -135,9 +135,10 @@ class InquiryLocationCollector(Beginning):
 
     def handle_local_intents(self, request: Request):
         location = request.problem_location
-        if location == 2:
-            print(location)
-        for intent in intents.APARTMENT_INTENTS:
+        if location == 'Location.APARTMENT':
+            lookup_intents = intents.APARTMENT_INTENTS
+
+        for intent in lookup_intents:
             if intent['intent_name'] in request.intents and 'date_restriction' in intent.keys():
                 if not _is_in_range(intent['date_restriction']):
                     return FailedInquiry('об этом можно сообщить только в период ' + str(intent['date_restriction']) + ".")
