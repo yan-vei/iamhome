@@ -134,6 +134,7 @@ class InquiryLocationCollector(Beginning):
         return self.make_response(text, problem_location=self.location)
 
     def handle_local_intents(self, request: Request):
+        print(request.problem_location)
         for intent in intents.APARTMENT_INTENTS:
             if intent['intent_name'] in request.intents and 'date_restriction' in intent.keys():
                 if not _is_in_range(intent['date_restriction']):
