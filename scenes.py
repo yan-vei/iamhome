@@ -127,7 +127,7 @@ class StartInquiry(Beginning):
 
 class InquiryLocationCollector(Beginning):
     def __init__(self, location=None):
-        location = self.location
+        self.location = location
 
     def reply(self, request: Request):
         text = add_positive_answer('А что случилось?')
