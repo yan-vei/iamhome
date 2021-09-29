@@ -122,7 +122,7 @@ class StartInquiry(Beginning):
         if intents.CHOOSE_INQUIRY_LOCATION in request.intents:
             print('User selected location: ' + str(request.intents[intents.CHOOSE_INQUIRY_LOCATION]['slots']['location']['value']))
             location = entities.choose_location(request, intents.CHOOSE_INQUIRY_LOCATION)
-            return InquiryLocationCollector()
+            return InquiryLocationCollector(location)
 
 
 class InquiryLocationCollector(Beginning):
