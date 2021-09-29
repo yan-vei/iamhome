@@ -134,6 +134,7 @@ class InquiryLocationCollector(Beginning):
         return self.make_response(text, problem_location=self.location)
 
     def handle_local_intents(self, request: Request):
+        # Выбрать подходящий массив с интентами для поиска в зависимости от локации
         location = request.problem_location
         if location == 'Location.APARTMENT':
             lookup_intents = intents.APARTMENT_INTENTS
