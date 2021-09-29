@@ -13,7 +13,7 @@ YANDEX_GEO = 'YANDEX.GEO'
 CHOOSE_INQUIRY_LOCATION = 'chooseInquiryLocation'
 
 # Интенты по категориям проблем
-PROBLEM_INTENTS = [{'intent_name': 'lowTempApartment',  # Низкая температура в отапливаемом помещении
+APARTMENT_INTENTS = [{'intent_name': 'lowTempApartment',  # Низкая температура в отапливаемом помещении
                     'category_id': 1,
                     'subcategory_id': 1,
                     'date_restriction': '15/09-12/05',
@@ -62,7 +62,18 @@ PROBLEM_INTENTS = [{'intent_name': 'lowTempApartment',  # Низкая темп�
                     'category_id': 4,
                     'subcategory_id': 1,
                     'date_restriction': '',
-                    'location': 2}
+                    'location': 2},
+                    {'intent_name': 'leakingPipeApartment',     # Ненадлежащее содержание трубопроводов и элементов системы водоснабжения, являющихся общедомовым имуществом
+                    'category_id': 3,
+                    'subcategory_id': 7,
+                    'date_restriction': '',
+                    'location': 2},
+                    {'intent_name': 'damagedRadiatorApart',     # Повреждение запорной арматуры (вентиль, кран), стояка центрального отопления
+                    'category_id': 4,
+                    'subcategory_id': 3,
+                    'date_restriction': '',
+                    'location': 2
+                    }
                    ]
 
 # LOCATION CODES:

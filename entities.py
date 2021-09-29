@@ -19,4 +19,7 @@ class Location(enum.Enum):
         else:
             return cls.UNKNOWN
 
+def choose_location(request: Request, intent_name: str):
+    location = Location.from_request(request, intent_name)
+    return location
 

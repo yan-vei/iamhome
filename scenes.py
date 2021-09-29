@@ -5,7 +5,7 @@ import sys
 import datetime
 
 from request import Request
-from entities import Location
+import entities
 from state import STATE_RESPONSE_KEY
 from answers import add_positive_answer
 import intents
@@ -118,6 +118,8 @@ class StartInquiry(Beginning):
     def handle_local_intents(self, request: Request):
         if intents.CHOOSE_INQUIRY_LOCATION in request.intents:
             print('User selected location: ' + str(request.intents[intents.CHOOSE_INQUIRY_LOCATION]['slots']['location']['value']))
+            location_id = entities.choose_location(request, request.intents[intents.CHOOSE_INQUIRY_LOCATION]['slots']['location']['value'])
+            print(location_id)
             return InquiryLocationCollector()
 
 
@@ -127,7 +129,7 @@ class InquiryLocationCollector(Beginning):
         return self.make_response(text)
 
     def handle_local_intents(self, request: Request):
-        for intent in intents.PROBLEM_INTENTS:
+        for intent in intents.APARTMENT_INTENTS:
             if intent['intent_name'] in request.intents and 'date_restriction' in intent.keys():
                 if not _is_in_range(intent['date_restriction']):
                     return FailedInquiry('об этом можно сообщить только в период ' + str(intent['date_restriction']) + ".")
