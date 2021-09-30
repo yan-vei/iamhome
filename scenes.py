@@ -16,7 +16,7 @@ def handle_buttons(*args):
         return None
     buttons = []
     for button in args:
-        buttons.append({"title": button})
+        buttons.append({"title": button, "hide": True})
     return buttons
 
 
