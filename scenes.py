@@ -173,7 +173,7 @@ class InquiryAddressCollector(Beginning):
                         if address != {}:
                             return InquiryAccepted
 
-def InquiryGetApartment(InquiryAddressCollector):
+class InquiryGetApartment(InquiryAddressCollector):
     def reply(self, request: Request):
         user_problem = request.user_problem
         text = ('Не могли бы Вы подсказать номер квартиры?')
