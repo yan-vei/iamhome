@@ -11,6 +11,16 @@ from answers import add_positive_answer
 import intents
 
 
+def handle_buttons(*args):
+    if args is None:
+        return None
+    buttons = []
+    for button in args:
+        buttons.append({"title": button,
+                        "hide": hide})
+    return buttons
+
+
 class Scene(ABC):
 
     @classmethod
@@ -36,6 +46,7 @@ class Scene(ABC):
     @abstractmethod
     def handle_local_intents(request: Request) -> Optional[str]:
         raise NotImplementedError()
+
 
     def fallback(self, request: Request):
         return self.make_response('Извините, я вас не поняла. Пожалуйста, попробуйте повторить ваш ответ.')
@@ -89,7 +100,7 @@ class Beginning(Scene):
         else:
             text = ('Здравствуйте! Я - помощник по проблемам с ЖКХ в вашем доме. \
                     Хотите оформить заявку или проверить статус?')
-        return self.make_response(text)
+        return self.make_response(text, buttons=handle_buttons("Оформить заявку", "Проверить статус"))
 
     def handle_global_intents(self, request):
         if intents.YANDEX_HELP in request.intents or intents.LEARN_MORE in request.intents:
