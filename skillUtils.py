@@ -1,6 +1,3 @@
-import datetime
-import intents
-
 def validate_address(street, house_number):
     address_details = ['дом','этаж', 'квартира', 'парадная', 'подъезд', 'квартирой', 'этаже', 'подъезде'
                        'доме', 'дома',  'подъезду', 'квартиры', 'подъезда', 'парадной', 'парадную', 'квартиру', 'этажом',
@@ -9,7 +6,12 @@ def validate_address(street, house_number):
     house_details = house_number.split(' ')
     token_index = 0
     if len(house_details) == 1:
-        return {'дом': house_number[0]}
+        return {'дом': house_details[0]}
+    elif len(house_details) == 2:
+        if house_details[0].isdigit() and house_details[1].isdigit():
+            return {'дом': house_details[0], 'квартира': house_details[1]}
+        else:
+            return {}
     while token_index < len(house_details):
         if token_index == 0:
             if house_details[token_index].isdigit() and not house_details[token_index+1].startswith('дом'):
