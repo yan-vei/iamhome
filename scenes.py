@@ -144,27 +144,28 @@ class InquiryLocationCollector(Beginning):
                 if not skillUtils._is_in_range(intent['date_restriction']):
                     return FailedInquiry('об этом можно сообщить только в период ' + str(intent['date_restriction']) + ".")
                 else:
-                    return InquiryAddressCollector(intent['intent_name'])
+                    return InquiryAddressCollector(intent['intent_name'], location)
             elif intent['intent_name'] in request.intents and 'date_restriction' not in intent.keys():
-                return InquiryAddressCollector(intent['intent_name'])
+                return InquiryAddressCollector(intent['intent_name'], location)
 
 
 class InquiryAddressCollector(Beginning):
-    def __init__(self, user_problem=None):
+    def __init__(self, user_problem=None, problem_location=None):
         self.user_problem = user_problem
+        self.problem_location = problem_location
 
     def reply(self, request: Request):
         text = add_positive_answer('Подскажете адрес?')
-        return self.make_response(text, user_problem=self.user_problem)
+        return self.make_response(text, user_problem=self.user_problem, problem_location=self.location)
 
     def handle_local_intents(self, request: Request):
         user_problem = request.user_problem
+        location = request.problem_location
         for entity in request.entities:
             if entity['type'] == intents.YANDEX_GEO:
                 if 'street' in entity['value'].keys() and 'house_number' in entity['value'].keys():
                     address = skillUtils.validate_address(entity['value']['street'], entity['value']['house_number'])
-                    problem_location = skillUtils.getIntentLocation(user_problem)
-                    if problem_location == 2:
+                    if location == 'Location.APARTMENT':
                         if 'квартира' not in address.keys():
                             return InquiryGetApartment()
                         else:
