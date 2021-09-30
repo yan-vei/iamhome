@@ -158,12 +158,31 @@ class InquiryAddressCollector(Beginning):
         return self.make_response(text, user_problem=self.user_problem)
 
     def handle_local_intents(self, request: Request):
+        user_problem = request.user_problem
         for entity in request.entities:
             if entity['type'] == intents.YANDEX_GEO:
                 if 'street' in entity['value'].keys() and 'house_number' in entity['value'].keys():
                     address = skillUtils.validate_address(entity['value']['street'], entity['value']['house_number'])
-                    if address != {}:
-                        return InquiryAccepted()
+                    problem_location = skillUtils.getIntentLocation(user_problem)
+                    if problem_location == 2:
+                        if 'квартира' not in address.keys():
+                            return InquiryGetApartment()
+                        else:
+                            return InquiryAccepted
+                    else:
+                        if address != {}:
+                            return InquiryAccepted
+
+def InquiryGetApartment(InquiryAddressCollector):
+    def reply(self, request: Request):
+        user_problem = request.user_problem
+        text = ('Не могли бы Вы подсказать номер квартиры?')
+        return self.make_response(text, user_problem=self.user_problem)
+
+    def handle_local_intents(self, request: Request):
+        for entity in request.entities:
+            if entity['type'] == intents.YANDEX_NUMBER:
+                return InquiryAccepted()
 
 
 class InquiryAccepted(InquiryAddressCollector):

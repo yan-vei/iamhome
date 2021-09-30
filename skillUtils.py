@@ -1,4 +1,5 @@
 import datetime
+import intents
 
 def validate_address(street, house_number):
     address_details = ['дом','этаж', 'квартира', 'парадная', 'подъезд', 'квартирой', 'этаже', 'подъезде'
@@ -54,3 +55,8 @@ def _is_in_range(restriction):
     start = datetime.datetime.strptime(start_str, "%d/%m/%Y")
     finish = datetime.datetime.strptime(finish_str, "%d/%m/%Y")
     return start <= today <= finish
+
+def getIntentLocation(intent_name):
+    for intent in intents.APARTMENT_INTENTS:
+        if intent_name == intent['intent_name']:
+            return intent['location']
