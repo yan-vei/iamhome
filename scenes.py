@@ -168,10 +168,10 @@ class InquiryAddressCollector(Beginning):
                         if 'квартира' not in address.keys():
                             return InquiryGetApartment()
                         else:
-                            return InquiryAccepted
+                            return InquiryAccepted()
                     else:
                         if address != {}:
-                            return InquiryAccepted
+                            return InquiryAccepted()
 
 class InquiryGetApartment(InquiryAddressCollector):
     def reply(self, request: Request):
