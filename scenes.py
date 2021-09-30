@@ -162,9 +162,6 @@ class InquiryAddressCollector(Beginning):
             if entity['type'] == intents.YANDEX_GEO:
                 if 'street' in entity['value'].keys() and 'house_number' in entity['value'].keys():
                     return InquiryAccepted()
-                elif 'street' in entity['value'].keys() and not 'house_number' in entity['value'].keys():
-                    text = 'Извините, но я Вас не поняла. Подскажите, пожалуйста, полный адрес: с улицей и номером дома.'
-                    return self.make_response(text)
 
 
 class InquiryAccepted(InquiryAddressCollector):
