@@ -144,19 +144,19 @@ class InquiryLocationCollector(Beginning):
                 if not skillUtils._is_in_range(intent['date_restriction']):
                     return FailedInquiry('об этом можно сообщить только в период ' + str(intent['date_restriction']) + ".")
                 else:
-                    return InquiryAddressCollector(intent['intent_name'], location)
+                    return InquiryAddressCollector(intent['intent_name'])
             elif intent['intent_name'] in request.intents and 'date_restriction' not in intent.keys():
-                return InquiryAddressCollector(intent['intent_name'], location)
+                return InquiryAddressCollector(intent['intent_name'])
 
 
 class InquiryAddressCollector(Beginning):
-    def __init__(self, user_problem=None, problem_location=None):
+    def __init__(self, user_problem=None):
         self.user_problem = user_problem
-        self.problem_location = problem_location
 
     def reply(self, request: Request):
+        location = request.problem_location
         text = add_positive_answer('Подскажете адрес?')
-        return self.make_response(text, user_problem=self.user_problem, problem_location=self.location)
+        return self.make_response(text, user_problem=self.user_problem, problem_location=location)
 
     def handle_local_intents(self, request: Request):
         user_problem = request.user_problem
