@@ -38,7 +38,7 @@ class Scene(ABC):
         raise NotImplementedError()
 
     def fallback(self, request: Request):
-        return self.make_response('Извините, я вас не поняла. Пожалуйста, попробуйте повторить ваш ответ.')
+        return self.make_response('Извините, я Вас не поняла. Пожалуйста, попробуйте повторить ваш ответ.')
 
     def make_response(self, text, tts=None, card=None, state=None,
                       buttons=None, directives=None, application_state=None, user_state=None, user_problem=None,
