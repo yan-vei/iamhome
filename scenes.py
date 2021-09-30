@@ -159,7 +159,6 @@ class InquiryAddressCollector(Beginning):
         return self.make_response(text, user_problem=self.user_problem, problem_location=location)
 
     def handle_local_intents(self, request: Request):
-        user_problem = request.user_problem
         location = request.problem_location
         for entity in request.entities:
             if entity['type'] == intents.YANDEX_GEO:
