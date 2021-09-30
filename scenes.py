@@ -5,7 +5,7 @@ import sys
 import datetime
 
 from request import Request
-from entities import Location
+import entities
 from state import STATE_RESPONSE_KEY
 from answers import add_positive_answer
 import intents
@@ -41,7 +41,8 @@ class Scene(ABC):
         return self.make_response('Извините, я вас не поняла. Пожалуйста, попробуйте повторить ваш ответ.')
 
     def make_response(self, text, tts=None, card=None, state=None,
-                      buttons=None, directives=None, application_state=None, user_state=None, user_problem=None, end_session=None):
+                      buttons=None, directives=None, application_state=None, user_state=None, user_problem=None,
+                      problem_location=None, end_session=None):
 
         response = {
             'text': text,
@@ -70,6 +71,8 @@ class Scene(ABC):
             webhook_response['application_state'] = application_state
         if user_problem is not None:
             webhook_response[STATE_RESPONSE_KEY]['user_problem'] = user_problem
+        if problem_location is not None:
+            webhook_response[STATE_RESPONSE_KEY]['problem_location'] = problem_location
         if state is not None:
             webhook_response[STATE_RESPONSE_KEY].update(state)
         return webhook_response
@@ -118,16 +121,25 @@ class StartInquiry(Beginning):
     def handle_local_intents(self, request: Request):
         if intents.CHOOSE_INQUIRY_LOCATION in request.intents:
             print('User selected location: ' + str(request.intents[intents.CHOOSE_INQUIRY_LOCATION]['slots']['location']['value']))
-            return InquiryLocationCollector()
+            location = entities.choose_location(request, intents.CHOOSE_INQUIRY_LOCATION)
+            return InquiryLocationCollector(location)
 
 
 class InquiryLocationCollector(Beginning):
+    def __init__(self, location=None):
+        self.location = location
+
     def reply(self, request: Request):
         text = add_positive_answer('А что случилось?')
-        return self.make_response(text)
+        return self.make_response(text, problem_location=self.location)
 
     def handle_local_intents(self, request: Request):
-        for intent in intents.PROBLEM_INTENTS:
+        # Выбрать подходящий массив с интентами для поиска в зависимости от локации
+        location = request.problem_location
+        if location == 'Location.APARTMENT':
+            lookup_intents = intents.APARTMENT_INTENTS
+
+        for intent in lookup_intents:
             if intent['intent_name'] in request.intents and 'date_restriction' in intent.keys():
                 if not _is_in_range(intent['date_restriction']):
                     return FailedInquiry('об этом можно сообщить только в период ' + str(intent['date_restriction']) + ".")
