@@ -168,8 +168,6 @@ class InquiryAddressCollector(Beginning):
                     address = skillUtils.validate_address(entity['value']['street'], entity['value']['house_number'])
 
                     if location == 'Location.APARTMENT':
-                        if 'этаж' not in address.keys():
-                            return InquiryGetFloor()
                         if 'квартира' not in address.keys():
                             return InquiryGetApartment()
                         else:
@@ -182,6 +180,7 @@ class InquiryAddressCollector(Beginning):
                     else:
                         if address != {}:
                             return InquiryAccepted()
+
 
 class InquiryGetApartment(InquiryAddressCollector):
     def reply(self, request: Request):
