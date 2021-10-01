@@ -212,7 +212,7 @@ class InquiryGetFloor(InquiryAddressCollector):
             return InquiryAccepted()
 
 
-def InquiryGetFloorConfirmation(InquiryGetFloor):
+class InquiryGetFloorConfirmation(InquiryGetFloor):
     def reply(self, request: Request):
         user_problem = request.user_problem
         text = add_positive_answer('Какой этаж?')
