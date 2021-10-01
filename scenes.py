@@ -120,13 +120,13 @@ class Help(Beginning):
         text = ('Давайте я подскажу вам, что я могу сделать. \
                     Например, я могу оформить заявку о засорившемся мусоропроводе, или, \
                     если вы уже создали заявку, я могу ее проверить. Хотите оформить заявку или проверить статус?')
-        return self.make_response(text)
+        return self.make_response(text, buttons=handle_buttons("Оформить заявку", "Проверить статус"))
 
 
 class StartInquiry(Beginning):
     def reply(self, request: Request):
         text = add_positive_answer('Давайте оформим заявку. Где проблема: в доме или в квартире?')
-        return self.make_response(text)
+        return self.make_response(text, buttons=handle_buttons("В доме", "В квартире"))
 
     def handle_local_intents(self, request: Request):
         if intents.CHOOSE_INQUIRY_LOCATION in request.intents:
@@ -179,7 +179,7 @@ class InquiryAccepted(InquiryAddressCollector):
         user_problem = request.user_problem
         # Вставить вызов API с регистрацией заявки и обновлением статуса в хранилище состояний
         text = ('Ваша заявка зарегистрирована. Спасибо за обращение! Хотите оформить еще одну заявку?')
-        return self.make_response(text)
+        return self.make_response(text, buttons=handle_buttons("Да", "Нет"))
 
     def handle_local_intents(self, request: Request):
         if intents.YANDEX_CONFIRM in request.intents:
