@@ -11,6 +11,15 @@ from answers import add_positive_answer
 import intents
 
 
+def handle_buttons(*args):
+    if args is None:
+        return None
+    buttons = []
+    for button in args:
+        buttons.append({"title": button, "hide": True})
+    return buttons
+
+
 class Scene(ABC):
 
     @classmethod
@@ -36,6 +45,7 @@ class Scene(ABC):
     @abstractmethod
     def handle_local_intents(request: Request) -> Optional[str]:
         raise NotImplementedError()
+
 
     def fallback(self, request: Request):
         return self.make_response('Извините, я Вас не поняла. Пожалуйста, попробуйте повторить ваш ответ.')
@@ -89,7 +99,7 @@ class Beginning(Scene):
         else:
             text = ('Здравствуйте! Я - помощник по проблемам с ЖКХ в вашем доме. \
                     Хотите оформить заявку или проверить статус?')
-        return self.make_response(text)
+        return self.make_response(text, buttons=handle_buttons("Оформить заявку", "Проверить статус"))
 
     def handle_global_intents(self, request):
         if intents.YANDEX_HELP in request.intents or intents.LEARN_MORE in request.intents:
@@ -110,13 +120,13 @@ class Help(Beginning):
         text = ('Давайте я подскажу вам, что я могу сделать. \
                     Например, я могу оформить заявку о засорившемся мусоропроводе, или, \
                     если вы уже создали заявку, я могу ее проверить. Хотите оформить заявку или проверить статус?')
-        return self.make_response(text)
+        return self.make_response(text, buttons=handle_buttons("Оформить заявку", "Проверить статус"))
 
 
 class StartInquiry(Beginning):
     def reply(self, request: Request):
         text = add_positive_answer('Давайте оформим заявку. Где проблема: в доме или в квартире?')
-        return self.make_response(text)
+        return self.make_response(text, buttons=handle_buttons("В доме", "В квартире"))
 
     def handle_local_intents(self, request: Request):
         if intents.CHOOSE_INQUIRY_LOCATION in request.intents:
@@ -190,7 +200,7 @@ class InquiryAccepted(InquiryAddressCollector):
         user_problem = request.user_problem
         # Вставить вызов API с регистрацией заявки и обновлением статуса в хранилище состояний
         text = ('Ваша заявка зарегистрирована. Спасибо за обращение! Хотите оформить еще одну заявку?')
-        return self.make_response(text)
+        return self.make_response(text, buttons=handle_buttons("Да", "Нет"))
 
     def handle_local_intents(self, request: Request):
         if intents.YANDEX_CONFIRM in request.intents:
