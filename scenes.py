@@ -2,10 +2,10 @@ from abc import ABC, abstractmethod
 from typing import Optional
 import inspect
 import sys
-import datetime
 
 from request import Request
 import entities
+import skillUtils
 from state import STATE_RESPONSE_KEY
 from answers import add_positive_answer
 import intents
@@ -38,7 +38,7 @@ class Scene(ABC):
         raise NotImplementedError()
 
     def fallback(self, request: Request):
-        return self.make_response('Извините, я вас не поняла. Пожалуйста, попробуйте повторить ваш ответ.')
+        return self.make_response('Извините, я Вас не поняла. Пожалуйста, попробуйте повторить ваш ответ.')
 
     def make_response(self, text, tts=None, card=None, state=None,
                       buttons=None, directives=None, application_state=None, user_state=None, user_problem=None,
@@ -141,7 +141,7 @@ class InquiryLocationCollector(Beginning):
 
         for intent in lookup_intents:
             if intent['intent_name'] in request.intents and 'date_restriction' in intent.keys():
-                if not _is_in_range(intent['date_restriction']):
+                if not skillUtils._is_in_range(intent['date_restriction']):
                     return FailedInquiry('об этом можно сообщить только в период ' + str(intent['date_restriction']) + ".")
                 else:
                     return InquiryAddressCollector(intent['intent_name'])
@@ -154,14 +154,35 @@ class InquiryAddressCollector(Beginning):
         self.user_problem = user_problem
 
     def reply(self, request: Request):
+        location = request.problem_location
         text = add_positive_answer('Подскажете адрес?')
+        return self.make_response(text, user_problem=self.user_problem, problem_location=location)
+
+    def handle_local_intents(self, request: Request):
+        location = request.problem_location
+        for entity in request.entities:
+            if entity['type'] == intents.YANDEX_GEO:
+                if 'street' in entity['value'].keys() and 'house_number' in entity['value'].keys():
+                    address = skillUtils.validate_address(entity['value']['street'], entity['value']['house_number'])
+                    if location == 'Location.APARTMENT':
+                        if 'квартира' not in address.keys():
+                            return InquiryGetApartment()
+                        else:
+                            return InquiryAccepted()
+                    else:
+                        if address != {}:
+                            return InquiryAccepted()
+
+class InquiryGetApartment(InquiryAddressCollector):
+    def reply(self, request: Request):
+        user_problem = request.user_problem
+        text = ('Не могли бы Вы подсказать номер квартиры?')
         return self.make_response(text, user_problem=self.user_problem)
 
     def handle_local_intents(self, request: Request):
         for entity in request.entities:
-            if entity['type'] == intents.YANDEX_GEO:
-                if 'street' in entity['value'].keys() and 'house_number' in entity['value'].keys():
-                    return InquiryAccepted()
+            if entity['type'] == intents.YANDEX_NUMBER:
+                return InquiryAccepted()
 
 
 class InquiryAccepted(InquiryAddressCollector):
@@ -227,26 +248,6 @@ def _list_scenes():
         if inspect.isclass(obj) and issubclass(obj, Scene):
             scenes.append(obj)
     return scenes
-
-
-def _is_in_range(restriction):
-    today = datetime.datetime.now()
-    year = today.strftime("%Y")
-
-    start_date = restriction.split('-')[0]
-    finish_date = restriction.split('-')[1]
-
-    start_month = start_date.split('/')[1]
-    end_month = finish_date.split('/')[1]
-
-    start_str = start_date + '/' + year
-    if start_month > end_month:
-        year = str(int(year) + 1)
-    finish_str = finish_date + '/' + year
-
-    start = datetime.datetime.strptime(start_str, "%d/%m/%Y")
-    finish = datetime.datetime.strptime(finish_str, "%d/%m/%Y")
-    return start <= today <= finish
 
 
 SCENES = {

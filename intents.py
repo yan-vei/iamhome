@@ -1,10 +1,12 @@
 # Базовые интенты
 CREATE_INQUIRY = 'createInquiry'
 CHECK_INQUIRY = 'checkInquiry'
+LEARN_MORE = 'learnMore'
+
 YANDEX_HELP = 'YANDEX.HELP'
 YANDEX_CONFIRM = 'YANDEX.CONFIRM'
 YANDEX_REJECT = 'YANDEX.REJECT'
-LEARN_MORE = 'learnMore'
+YANDEX_NUMBER = 'YANDEX.NUMBER'
 
 # Базовые сущности
 YANDEX_GEO = 'YANDEX.GEO'
