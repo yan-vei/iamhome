@@ -140,6 +140,8 @@ class InquiryLocationCollector(Beginning):
         location = request.problem_location
         if location == 'Location.APARTMENT':
             lookup_intents = intents.APARTMENT_INTENTS
+        elif location == 'Location.HOUSE':
+            lookup_intents = intents.HOUSE_INTENTS
 
         for intent in lookup_intents:
             if intent['intent_name'] in request.intents and 'date_restriction' in intent.keys():
