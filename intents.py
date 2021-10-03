@@ -68,6 +68,15 @@ APARTMENT_INTENTS = [{'intent_name': 'lowTempApartment',  # Низкая тем�
                     }
                    ]
 
+HOUSE_INTENTS = \
+    [
+        {'intent_name': 'leakingPipeHouse', # Протечка труб в подвале, на чердаке, на лестничной площадке
+        'category_id': 3,
+        'subcategory_id': 7,
+        'location': 3
+        }
+]
+
 # LOCATION CODES:
 # UNKNOWN = 1
 # APARTMENT = 2

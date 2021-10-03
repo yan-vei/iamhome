@@ -52,7 +52,7 @@ class Scene(ABC):
 
     def make_response(self, text, tts=None, card=None, state=None,
                       buttons=None, directives=None, application_state=None, user_state=None, user_problem=None,
-                      problem_location=None, end_session=None):
+                      problem_location=None, address_floor=None, end_session=None):
 
         response = {
             'text': text,
@@ -81,6 +81,8 @@ class Scene(ABC):
             webhook_response['application_state'] = application_state
         if user_problem is not None:
             webhook_response[STATE_RESPONSE_KEY]['user_problem'] = user_problem
+        if address_floor is not None:
+            webhook_response[STATE_RESPONSE_KEY]['address_floor'] = address_floor
         if problem_location is not None:
             webhook_response[STATE_RESPONSE_KEY]['problem_location'] = problem_location
         if state is not None:
@@ -148,6 +150,8 @@ class InquiryLocationCollector(Beginning):
         location = request.problem_location
         if location == 'Location.APARTMENT':
             lookup_intents = intents.APARTMENT_INTENTS
+        elif location == 'Location.HOUSE':
+            lookup_intents = intents.HOUSE_INTENTS
 
         for intent in lookup_intents:
             if intent['intent_name'] in request.intents and 'date_restriction' in intent.keys():
@@ -174,14 +178,21 @@ class InquiryAddressCollector(Beginning):
             if entity['type'] == intents.YANDEX_GEO:
                 if 'street' in entity['value'].keys() and 'house_number' in entity['value'].keys():
                     address = skillUtils.validate_address(entity['value']['street'], entity['value']['house_number'])
+
                     if location == 'Location.APARTMENT':
                         if 'квартира' not in address.keys():
                             return InquiryGetApartment()
                         else:
                             return InquiryAccepted()
+                    elif location == 'Location.HOUSE':
+                        if 'этаж' not in address.keys():
+                            return InquiryGetFloor()
+                        else:
+                            return InquiryAccepted()
                     else:
                         if address != {}:
                             return InquiryAccepted()
+
 
 class InquiryGetApartment(InquiryAddressCollector):
     def reply(self, request: Request):
@@ -192,6 +203,36 @@ class InquiryGetApartment(InquiryAddressCollector):
     def handle_local_intents(self, request: Request):
         for entity in request.entities:
             if entity['type'] == intents.YANDEX_NUMBER:
+                return InquiryAccepted()
+
+
+class InquiryGetFloor(InquiryAddressCollector):
+    def reply(self, request: Request):
+        user_problem = request.user_problem
+        text = ('Хотите уточнить этаж?')
+        return self.make_response(text, user_problem=self.user_problem)
+
+    def handle_local_intents(self, request: Request):
+        for entity in request.entities:
+            if entity['type'] == intents.YANDEX_NUMBER:
+                print('User added the floor.')
+                return InquiryAccepted()
+        if intents.YANDEX_CONFIRM in request.intents:
+            return InquiryGetFloorConfirmation()
+        elif intents.YANDEX_REJECT in request.intents:
+            return InquiryAccepted()
+
+
+class InquiryGetFloorConfirmation(InquiryGetFloor):
+    def reply(self, request: Request):
+        user_problem = request.user_problem
+        text = add_positive_answer('Какой этаж?')
+        return self.make_response(text, user_problem=self.user_problem)
+
+    def handle_local_intents(self, request: Request):
+        for entity in request.entities:
+            if entity['type'] == intents.YANDEX_NUMBER:
+                print('User added the floor.')
                 return InquiryAccepted()
 
 
