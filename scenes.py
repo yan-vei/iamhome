@@ -217,6 +217,12 @@ class InquiryGetFloorConfirmation(InquiryGetFloor):
         text = add_positive_answer('Какой этаж?')
         return self.make_response(text, user_problem=self.user_problem)
 
+    def handle_local_intents(self, request: Request):
+        for entity in request.entities:
+            if entity['type'] == intents.YANDEX_NUMBER:
+                print('User added the floor.')
+                return InquiryAccepted()
+
 
 class InquiryAccepted(InquiryAddressCollector):
     def reply(self, request: Request):
