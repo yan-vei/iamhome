@@ -222,8 +222,9 @@ class InquiryGetApartment(InquiryAddressCollector):
     def handle_local_intents(self, request: Request):
         for entity in request.entities:
             if entity['type'] == intents.YANDEX_NUMBER:
-                self.problem['apartment_number'] = entity['value']
-                return InquiryAccepted(self.problem)
+                problem = self.problem
+                problem['apartment_number'] = entity['value']
+                return InquiryAccepted(problem)
 
 
 class InquiryGetFloor(InquiryAddressCollector):
@@ -253,9 +254,10 @@ class InquiryGetFloorConfirmation(InquiryGetFloor):
     def handle_local_intents(self, request: Request):
         for entity in request.entities:
             if entity['type'] == intents.YANDEX_NUMBER:
-                self.problem['floor'] = entity['value']
+                problem = self.problem
+                problem['floor'] = entity['value']
                 print('User added the floor.')
-                return InquiryAccepted(self.problem)
+                return InquiryAccepted(problem)
 
 
 class InquiryAccepted(InquiryAddressCollector):
