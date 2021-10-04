@@ -169,6 +169,7 @@ class InquiryLocationCollector(Beginning):
     def handle_local_intents(self, request: Request):
         # Выбрать подходящий массив с интентами для поиска в зависимости от локации
         location = request.problem_location
+        print('location fetched ' + str(location))
         #if location == 'Location.APARTMENT':
          #   lookup_intents = intents.APARTMENT_INTENTS
         #elif location == 'Location.HOUSE':

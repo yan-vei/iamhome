@@ -30,7 +30,7 @@ class Request:
     @property
     def problem_location(self):
         state = self.request_body['state']
-        return state.get('session', {}).get('problem', {}).get('problem_location')
+        return state.get('session', {}).get('problem', {}).get('location')
 
     @property
     def entities(self):
