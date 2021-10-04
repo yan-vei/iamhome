@@ -223,7 +223,7 @@ class InquiryGetApartment(InquiryAddressCollector):
         for entity in request.entities:
             if entity['type'] == intents.YANDEX_NUMBER:
                 problem = self.problem
-                problem['apartment_number'] = entity['value']
+                problem['apartment_number'] = entity.get('value', 0)
                 return InquiryAccepted(problem)
 
 
