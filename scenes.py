@@ -10,6 +10,8 @@ from state import STATE_RESPONSE_KEY
 from answers import add_positive_answer
 import intents
 
+from InquiryApi import InquiryApi
+
 
 def handle_buttons(*args):
     if args is None:
@@ -18,6 +20,21 @@ def handle_buttons(*args):
     for button in args:
         buttons.append({"title": button, "hide": True})
     return buttons
+
+
+def handle_problem(intent_name=None, location=None, address=None, floor=None, ap_number=None):
+    problem = {}
+    if intent_name is not None:
+        problem['intent_name'] = intent_name
+    if location is not None:
+        problem['location'] = location
+    if address is not None:
+        problem['address'] = address
+    if floor is not None:
+        problem['floor'] = floor
+    if ap_number is not None:
+        problem['apartment_number'] = ap_number
+    return problem
 
 
 class Scene(ABC):
@@ -51,8 +68,8 @@ class Scene(ABC):
         return self.make_response('Извините, я Вас не поняла. Пожалуйста, попробуйте повторить ваш ответ.')
 
     def make_response(self, text, tts=None, card=None, state=None,
-                      buttons=None, directives=None, application_state=None, user_state=None, user_problem=None,
-                      problem_location=None, address_floor=None, end_session=None):
+                      buttons=None, directives=None, application_state=None, user_state=None, intent_name=None,
+                      problem_location=None, address_floor=None, end_session=None, problem_state=None):
 
         response = {
             'text': text,
@@ -75,18 +92,22 @@ class Scene(ABC):
                 'scene': self.id(),
             },
         }
+        problem_schema = {}
         if user_state is not None:
             webhook_response['user_state_update'] = user_state
         if application_state is not None:
             webhook_response['application_state'] = application_state
-        if user_problem is not None:
-            webhook_response[STATE_RESPONSE_KEY]['user_problem'] = user_problem
+
+
         if address_floor is not None:
-            webhook_response[STATE_RESPONSE_KEY]['address_floor'] = address_floor
+            problem_schema['address_floor'] = address_floor
+            webhook_response[STATE_RESPONSE_KEY]['address_floor'] = problem_schema
         if problem_location is not None:
             webhook_response[STATE_RESPONSE_KEY]['problem_location'] = problem_location
         if state is not None:
             webhook_response[STATE_RESPONSE_KEY].update(state)
+        if problem_state is not None:
+            webhook_response[STATE_RESPONSE_KEY]['problem'] = problem_state
         return webhook_response
 
 
@@ -133,113 +154,123 @@ class StartInquiry(Beginning):
     def handle_local_intents(self, request: Request):
         if intents.CHOOSE_INQUIRY_LOCATION in request.intents:
             print('User selected location: ' + str(request.intents[intents.CHOOSE_INQUIRY_LOCATION]['slots']['location']['value']))
-            location = entities.choose_location(request, intents.CHOOSE_INQUIRY_LOCATION)
-            return InquiryLocationCollector(location)
+            problem = handle_problem(location=entities.choose_location(request, intents.CHOOSE_INQUIRY_LOCATION))
+            #location = entities.choose_location(request, intents.CHOOSE_INQUIRY_LOCATION)
+            return InquiryLocationCollector(problem)
 
 
 class InquiryLocationCollector(Beginning):
-    def __init__(self, location=None):
-        self.location = location
+    def __init__(self, problem=None):
+        self.problem = problem
 
     def reply(self, request: Request):
         text = add_positive_answer('А что случилось?')
-        return self.make_response(text, problem_location=self.location)
+        return self.make_response(text, problem_state=self.problem)
 
     def handle_local_intents(self, request: Request):
         # Выбрать подходящий массив с интентами для поиска в зависимости от локации
         location = request.problem_location
-        if location == 'Location.APARTMENT':
-            lookup_intents = intents.APARTMENT_INTENTS
-        elif location == 'Location.HOUSE':
-            lookup_intents = intents.HOUSE_INTENTS
+        #if location == 'Location.APARTMENT':
+         #   lookup_intents = intents.APARTMENT_INTENTS
+        #elif location == 'Location.HOUSE':
+         #   lookup_intents = intents.HOUSE_INTENTS
+
+        lookup_intents = intents.APARTMENT_INTENTS if location == 'Location.APARTMENT' else intents.HOUSE_INTENTS
 
         for intent in lookup_intents:
             if intent['intent_name'] in request.intents and 'date_restriction' in intent.keys():
                 if not skillUtils._is_in_range(intent['date_restriction']):
                     return FailedInquiry('об этом можно сообщить только в период ' + str(intent['date_restriction']) + ".")
                 else:
-                    return InquiryAddressCollector(intent['intent_name'])
+                    return InquiryAddressCollector(handle_problem(location=location, intent_name=intent['intent_name']))
             elif intent['intent_name'] in request.intents and 'date_restriction' not in intent.keys():
-                return InquiryAddressCollector(intent['intent_name'])
+                return InquiryAddressCollector(handle_problem(location=location, intent_name=intent['intent_name']))
 
 
 class InquiryAddressCollector(Beginning):
-    def __init__(self, user_problem=None):
-        self.user_problem = user_problem
+    def __init__(self, problem=None):
+        self.problem = problem
 
     def reply(self, request: Request):
-        location = request.problem_location
+        # location = request.problem_location
         text = add_positive_answer('Подскажете адрес?')
-        return self.make_response(text, user_problem=self.user_problem, problem_location=location)
+        return self.make_response(text, problem_state=self.problem)
 
     def handle_local_intents(self, request: Request):
         location = request.problem_location
+        intent_name = request.intent_name
         for entity in request.entities:
             if entity['type'] == intents.YANDEX_GEO:
                 if 'street' in entity['value'].keys() and 'house_number' in entity['value'].keys():
                     address = skillUtils.validate_address(entity['value']['street'], entity['value']['house_number'])
+                    self.problem = handle_problem(location=location, intent_name=intent_name, address=address)
 
                     if location == 'Location.APARTMENT':
                         if 'квартира' not in address.keys():
-                            return InquiryGetApartment()
+                            return InquiryGetApartment(self.problem)
                         else:
                             return InquiryAccepted()
                     elif location == 'Location.HOUSE':
                         if 'этаж' not in address.keys():
-                            return InquiryGetFloor()
+                            return InquiryGetFloor(self.problem)
                         else:
-                            return InquiryAccepted()
+                            return InquiryAccepted(self.problem)
                     else:
                         if address != {}:
-                            return InquiryAccepted()
+                            return InquiryAccepted(self.problem)
 
 
 class InquiryGetApartment(InquiryAddressCollector):
     def reply(self, request: Request):
-        user_problem = request.user_problem
+        intent_name = request.intent_name
         text = ('Не могли бы Вы подсказать номер квартиры?')
-        return self.make_response(text, user_problem=self.user_problem)
+        return self.make_response(text, problem_state=self.problem)
 
     def handle_local_intents(self, request: Request):
         for entity in request.entities:
             if entity['type'] == intents.YANDEX_NUMBER:
-                return InquiryAccepted()
+                self.problem['apartment_number'] = entity['value']
+                return InquiryAccepted(self.problem)
 
 
 class InquiryGetFloor(InquiryAddressCollector):
     def reply(self, request: Request):
-        user_problem = request.user_problem
+        intent_name = request.intent_name
         text = ('Хотите уточнить этаж?')
-        return self.make_response(text, user_problem=self.user_problem)
+        return self.make_response(text, problem_state=self.problem)
 
     def handle_local_intents(self, request: Request):
         for entity in request.entities:
             if entity['type'] == intents.YANDEX_NUMBER:
                 print('User added the floor.')
-                return InquiryAccepted()
+                self.problem['floor'] = entity['value']
+                return InquiryAccepted(self.problem)
         if intents.YANDEX_CONFIRM in request.intents:
-            return InquiryGetFloorConfirmation()
+            return InquiryGetFloorConfirmation(self.problem)
         elif intents.YANDEX_REJECT in request.intents:
-            return InquiryAccepted()
+            return InquiryAccepted(self.problem)
 
 
 class InquiryGetFloorConfirmation(InquiryGetFloor):
     def reply(self, request: Request):
-        user_problem = request.user_problem
+        intent_name = request.intent_name
         text = add_positive_answer('Какой этаж?')
-        return self.make_response(text, user_problem=self.user_problem)
+        return self.make_response(text, problem_state=self.problem)
 
     def handle_local_intents(self, request: Request):
         for entity in request.entities:
             if entity['type'] == intents.YANDEX_NUMBER:
+                self.problem['floor'] = entity['value']
                 print('User added the floor.')
-                return InquiryAccepted()
+                return InquiryAccepted(self.problem)
 
 
 class InquiryAccepted(InquiryAddressCollector):
+
     def reply(self, request: Request):
-        user_problem = request.user_problem
+        user_problem = request.intent_name
         # Вставить вызов API с регистрацией заявки и обновлением статуса в хранилище состояний
+        InquiryApi.InquiryMake(self.problem)
         text = ('Ваша заявка зарегистрирована. Спасибо за обращение! Хотите оформить еще одну заявку?')
         return self.make_response(text, buttons=handle_buttons("Да", "Нет"))
 
@@ -271,7 +302,7 @@ class FailedInquiry(InquiryLocationCollector):
 class StartCheck(Beginning):
     def reply(self, request: Request):
         if request.report_state is not None:
-            text = add_positive_answer('Давайте проверим вашу последнюю заявку под номером ' + str(request.session_state) + '. Хотите сообщить об еще одной проблеме?')
+            text = add_positive_answer('Давайте проверим вашу последнюю заявку под номером. Хотите сообщить об еще одной проблеме?')
         # вставить вызов API
         # проверить статус, в зависимости от статуса составить ответ, обновить хранилище состояний, если нужно
         else:
