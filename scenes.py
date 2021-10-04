@@ -98,7 +98,6 @@ class Scene(ABC):
         if application_state is not None:
             webhook_response['application_state'] = application_state
 
-
         if address_floor is not None:
             problem_schema['address_floor'] = address_floor
             webhook_response[STATE_RESPONSE_KEY]['address_floor'] = problem_schema

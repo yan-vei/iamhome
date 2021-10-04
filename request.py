@@ -19,18 +19,18 @@ class Request:
 
     @property
     def intent_name(self):
-        state = self.request_body['state']
-        return state.get('session', {}).get('problem', {}).get('intent_name')
+        state = self.request_body['session_state']
+        return state.get('problem', {}).get('intent_name')
 
     @property
     def address_floor(self):
-        state = self.request_body['state']
-        return state.get('session', {}).get('problem', {}).get('address_floor')
+        state = self.request_body['session_state']
+        return state.get('problem', {}).get('address_floor')
 
     @property
     def problem_location(self):
         state = self.request_body['state']
-        return state.get('session', {}).get('problem', {}).get('problem_location')
+        return state.get('problem', {}).get('problem_location')
 
     @property
     def entities(self):
