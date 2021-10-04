@@ -170,12 +170,12 @@ class InquiryLocationCollector(Beginning):
         # Выбрать подходящий массив с интентами для поиска в зависимости от локации
         location = request.problem_location
         print('location fetched ' + str(location))
-        #if location == 'Location.APARTMENT':
-         #   lookup_intents = intents.APARTMENT_INTENTS
-        #elif location == 'Location.HOUSE':
-         #   lookup_intents = intents.HOUSE_INTENTS
+        if location == 'Location.APARTMENT':
+            lookup_intents = intents.APARTMENT_INTENTS
+        elif location == 'Location.HOUSE':
+            lookup_intents = intents.HOUSE_INTENTS
 
-        lookup_intents = intents.APARTMENT_INTENTS if location == 'Location.APARTMENT' else intents.HOUSE_INTENTS
+        # lookup_intents = intents.APARTMENT_INTENTS if location == 'Location.APARTMENT' else intents.HOUSE_INTENTS
 
         for intent in lookup_intents:
             if intent['intent_name'] in request.intents and 'date_restriction' in intent.keys():

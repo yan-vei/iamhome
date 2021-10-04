@@ -25,7 +25,7 @@ class Request:
     @property
     def address_floor(self):
         state = self.request_body['state']
-        return state.get('session', {}).get('problem', {}).get('address_floor')
+        return state.get('session', {}).get('problem', {}).get('floor')
 
     @property
     def problem_location(self):
