@@ -156,7 +156,7 @@ class InquiryLocationCollector(Beginning):
         for intent in lookup_intents:
             if intent['intent_name'] in request.intents and 'date_restriction' in intent.keys():
                 if not skillUtils._is_in_range(intent['date_restriction']):
-                    return FailedInquiry('об этом можно сообщить только в период ' + str(intent['date_restriction']) + ".")
+                    return FailedInquiry('об этом можно сообщить только в период ' + str(intent['date_pronunciation']) + ".")
                 else:
                     return InquiryAddressCollector(intent['intent_name'])
             elif intent['intent_name'] in request.intents and 'date_restriction' not in intent.keys():

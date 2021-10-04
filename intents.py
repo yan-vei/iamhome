@@ -19,11 +19,13 @@ APARTMENT_INTENTS = [{'intent_name': 'lowTempApartment',  # Низкая тем�
                     'category_id': 1,
                     'subcategory_id': 1,
                     'date_restriction': '15/10-12/05',
+                    'date_pronunciation': 'с 15 октября по 12 мая',
                     'location': 2},
                    {'intent_name': 'highTempApartment',  # Высокая температура в отапливаемом помещении
                     'category_id': 1,
                     'subcategory_id': 2,
                     'date_restriction': '15/10-12/05',
+                    'date_pronunciation': 'с 15 октября по 12 мая',
                     'location': 2},
                    {'intent_name': 'noColdWaterApartment',  # Отсутствие холодной воды
                     'category_id': 2,
@@ -80,6 +82,7 @@ HOUSE_INTENTS = \
          'subcategory_id': 1,
          'location': 3,
         'date_restriction': '15/10-12/05',
+         'date_pronunciation': 'с 15 октября по 12 мая'
         },
         {'intent_name': 'NoRadiatorHouse', # Отсутствие радиатора на лестничной площадке
          'category_id': 1,
@@ -111,12 +114,14 @@ HOUSE_INTENTS = \
          'subcategory_id': 4,
          'location': 3,
          'date_restriction': '15/10-12/05',
+         'date_pronunciation': 'с 15 октября по 12 мая'
         },
         {'intent_name': 'iceHouse', # Наличие наледи на крыше
          'category_id': 3,
          'subcategory_id': 5,
          'location': 3,
          'date_restriction': '15/10-12/05',
+        'date_pronunciation': 'с 15 октября по 12 мая'
         },
         {'intent_name': 'garbageTopHouse', # Отсутствие/неисправность крышки загрузочного люка мусоропровода
          'category_id': 4,
