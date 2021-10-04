@@ -3,6 +3,7 @@ class InquiryApi:
     def InquiryMake(cls, problem):
         print('Collected Inquiry' + str(problem))
         # problem -> to back
+        return 1  # id
 
     def InquiryReceive(self, id):
         print('Fetched from back with id' + str(id))

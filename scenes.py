@@ -63,13 +63,12 @@ class Scene(ABC):
     def handle_local_intents(request: Request) -> Optional[str]:
         raise NotImplementedError()
 
-
     def fallback(self, request: Request):
         return self.make_response('Извините, я Вас не поняла. Пожалуйста, попробуйте повторить ваш ответ.')
 
     def make_response(self, text, tts=None, card=None, state=None,
-                      buttons=None, directives=None, application_state=None, user_state=None, intent_name=None,
-                      problem_location=None, address_floor=None, end_session=None, problem_state=None):
+                      buttons=None, directives=None, application_state=None, user_state=None,
+                      end_session=None, problem_state=None):
 
         response = {
             'text': text,
@@ -92,17 +91,11 @@ class Scene(ABC):
                 'scene': self.id(),
             },
         }
-        problem_schema = {}
         if user_state is not None:
             webhook_response['user_state_update'] = user_state
         if application_state is not None:
             webhook_response['application_state'] = application_state
 
-        if address_floor is not None:
-            problem_schema['address_floor'] = address_floor
-            webhook_response[STATE_RESPONSE_KEY]['address_floor'] = problem_schema
-        if problem_location is not None:
-            webhook_response[STATE_RESPONSE_KEY]['problem_location'] = problem_location
         if state is not None:
             webhook_response[STATE_RESPONSE_KEY].update(state)
         if problem_state is not None:
@@ -114,7 +107,7 @@ class Beginning(Scene):
     def reply(self, request: Request):
         last_inquiry = ''
         if request.report_state is not None:
-            # вставить API вызов для проверки статуса
+            InquiryApi.InquiryReceive(request.report_state)
             last_inquiry = ('Статус вашей последней заявки... ')
         if last_inquiry != '':
             text = last_inquiry + 'Хотите оформить новую заявку или узнать больше о том, что я умею?'
@@ -209,7 +202,7 @@ class InquiryAddressCollector(Beginning):
                         if 'квартира' not in address.keys():
                             return InquiryGetApartment(self.problem)
                         else:
-                            return InquiryAccepted()
+                            return InquiryAccepted(self.problem)
                     elif location == 'Location.HOUSE':
                         if 'этаж' not in address.keys():
                             return InquiryGetFloor(self.problem)
@@ -270,9 +263,10 @@ class InquiryAccepted(InquiryAddressCollector):
     def reply(self, request: Request):
         user_problem = request.intent_name
         # Вставить вызов API с регистрацией заявки и обновлением статуса в хранилище состояний
-        InquiryApi.InquiryMake(self.problem)
+
+        inquiry_id = InquiryApi.InquiryMake(self.problem)
         text = ('Ваша заявка зарегистрирована. Спасибо за обращение! Хотите оформить еще одну заявку?')
-        return self.make_response(text, buttons=handle_buttons("Да", "Нет"))
+        return self.make_response(text, buttons=handle_buttons("Да", "Нет"), application_state={'report_id': inquiry_id})
 
     def handle_local_intents(self, request: Request):
         if intents.YANDEX_CONFIRM in request.intents:
