@@ -29,7 +29,7 @@ class Request:
 
     @property
     def problem_location(self):
-        state = self.request_body['state']
+        state = self.request_body['session_state']
         return state.get('problem', {}).get('problem_location')
 
     @property
