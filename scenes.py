@@ -63,8 +63,8 @@ class Scene(ABC):
     def handle_local_intents(request: Request) -> Optional[str]:
         raise NotImplementedError()
 
-    def fallback(self, request: Request):
-        return self.make_response('Извините, я Вас не поняла. Пожалуйста, попробуйте повторить ваш ответ.')
+    def fallback(self, request: Request, fb_problem=None):
+        return self.make_response('Извините, я Вас не поняла. Пожалуйста, попробуйте повторить ваш ответ.', problem_state=fb_problem)
 
     def make_response(self, text, tts=None, card=None, state=None,
                       buttons=None, directives=None, application_state=None, user_state=None,
@@ -177,6 +177,7 @@ class InquiryLocationCollector(Beginning):
                     return InquiryAddressCollector(handle_problem(location=location, intent_name=intent['intent_name']))
             elif intent['intent_name'] in request.intents and 'date_restriction' not in intent.keys():
                 return InquiryAddressCollector(handle_problem(location=location, intent_name=intent['intent_name']))
+
 
 
 class InquiryAddressCollector(Beginning):

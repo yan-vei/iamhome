@@ -18,6 +18,11 @@ class Request:
             return state.get('application', {}).get('report_id')
 
     @property
+    def problem_state(self):
+        state = self.request_body['state']
+        return state.get('session', {}).get('problem', {})
+
+    @property
     def intent_name(self):
         state = self.request_body['state']
         return state.get('session', {}).get('problem', {}).get('intent_name')

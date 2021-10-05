@@ -18,4 +18,5 @@ def handler(event, context):
         return next_scene.reply(request)
     else:
         print(f'Failed to parse user request at scene {current_scene.id()}')
-        return current_scene.fallback(request)
+        problem = None if request.problem_state == {} else request.problem_state
+        return current_scene.fallback(request, problem)
