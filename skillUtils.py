@@ -69,8 +69,21 @@ def getIntentLocation(intent_name):
 
 
 def suggestTopIntents(location):
+    suggested_intents = []
+
     if location == 'Location.APARTMENT':
-        return intents.TOP_APARTMENT_INTENTS
+        top = intents.TOP_APARTMENT_INTENTS
+        all_intents = intents.APARTMENT_INTENTS
     elif location == 'Location.HOUSE':
-        return intents.TOP_HOUSE_INTENTS
+        top = intents.TOP_HOUSE_INTENTS
+        all_intents = intents.HOUSE_INTENTS
+
+    for top_intent in top:
+        for intent in all_intents:
+            if top_intent == intent['intent_name']:
+                suggested_intents.append(intent['informal_name'])
+                break
+
+    if suggested_intents != []:
+        return suggested_intents
     return None
