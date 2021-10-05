@@ -159,7 +159,7 @@ class InquiryLocationCollector(Beginning):
         top_intents = skillUtils.suggestTopIntents(self.problem['location'])
         if top_intents != None:
             buttons = top_intents
-        return self.make_response(text, problem_state=handle_problem(location=request.problem_location), buttons=handle_buttons(buttons[0], buttons[1], buttons[2], buttons[3]))
+        return self.make_response(text, problem_state=handle_problem(location=self.problem['location']), buttons=handle_buttons(buttons[0], buttons[1], buttons[2], buttons[3]))
 
     def handle_local_intents(self, request: Request):
         # Выбрать подходящий массив с интентами для поиска в зависимости от локации
