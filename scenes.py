@@ -163,7 +163,7 @@ class InquiryLocationCollector(Beginning):
 
     def handle_local_intents(self, request: Request):
         # Выбрать подходящий массив с интентами для поиска в зависимости от локации
-        location = request.problem_location
+        location = self.problem['location']
         print('location fetched ' + str(location))
         if location == 'Location.APARTMENT':
             lookup_intents = intents.APARTMENT_INTENTS
@@ -304,7 +304,7 @@ class FailedInquiry(InquiryLocationCollector):
 class StartCheck(Beginning):
     def reply(self, request: Request):
         if request.report_state is not None:
-            text = ('Давайте проверим вашу последнюю заявку под номером.' + request.report_state + '. Хотите сообщить об еще одной проблеме?')
+            text = ('Давайте проверим вашу последнюю заявку под номером.' + str(request.report_state) + '. Хотите сообщить об еще одной проблеме?')
             if InquiryApi.inquiry_receive(1) == 4:
                 return self.make_response(text, application_state={})  # обнуляем хранилище
         else:
