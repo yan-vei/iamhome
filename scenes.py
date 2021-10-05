@@ -143,9 +143,22 @@ class InquiryLocationCollector(Beginning):
 
     def reply(self, request: Request):
         text = add_positive_answer('А что случилось?')
-        top_intents = suggestTopIntents(self.location)
-        if top_intents != None:
-            buttons = top_intents
+        print(self.location)
+        suggested_intents = []
+        if self.location == 'Location.APARTMENT':
+            top = intents.TOP_APARTMENT_INTENTS
+            all_intents = intents.APARTMENT_INTENTS
+        elif self.location == 'Location.HOUSE':
+            top = intents.TOP_HOUSE_INTENTS
+            all_intents = intents.HOUSE_INTENTS
+        print(top)
+        for top_intent in top:
+            for intent in all_intents:
+                if top_intent == intent['intent_name']:
+                    suggested_intents.append(intent['informal_name'])
+                    break
+        if suggested_intents != []:
+            buttons = suggested_intents
         return self.make_response(text, problem_location=self.location, buttons=handle_buttons(buttons))
 
     def handle_local_intents(self, request: Request):
