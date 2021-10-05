@@ -261,7 +261,7 @@ HOUSE_INTENTS = \
 ]
 
 
-TOP_HOUSE_INTENTS = ['brokenSewageHouse', 'iceHouse', 'lowTempHouse', 'cleaningScheduleHouse', 'illegalWritingsHouse']
+TOP_HOUSE_INTENTS = ['brokenSewageHouse', 'iceHouse', 'cleaningScheduleHouse', 'illegalWritingsHouse']
 TOP_APARTMENT_INTENTS = ['leakingPipeApartment', 'lowTempApartment', 'noColdWaterApartment', 'brokenSewageApartment']
 
 # LOCATION CODES:
