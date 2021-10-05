@@ -70,6 +70,7 @@ def getIntentLocation(intent_name):
 
 def suggestTopIntents(location):
     suggested_intents = []
+    print(location)
 
     if location == 'Location.APARTMENT':
         top = intents.TOP_APARTMENT_INTENTS
