@@ -61,7 +61,16 @@ def _is_in_range(restriction):
     finish = datetime.datetime.strptime(finish_str, "%d/%m/%Y")
     return start <= today <= finish
 
+
 def getIntentLocation(intent_name):
     for intent in intents.APARTMENT_INTENTS:
         if intent_name == intent['intent_name']:
             return intent['location']
+
+
+def suggestTopIntents(location):
+    if location == 'Location.APARTMENT':
+        return intents.TOP_APARTMENT_INTENTS
+    elif location == 'Location.HOUSE':
+        return intents.TOP_HOUSE_INTENTS
+    return None

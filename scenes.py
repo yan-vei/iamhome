@@ -143,6 +143,7 @@ class InquiryLocationCollector(Beginning):
 
     def reply(self, request: Request):
         text = add_positive_answer('А что случилось?')
+        print(self.location)
         return self.make_response(text, problem_location=self.location)
 
     def handle_local_intents(self, request: Request):
