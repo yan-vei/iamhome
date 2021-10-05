@@ -198,7 +198,10 @@ class InquiryAddressCollector(Beginning):
             if entity['type'] == intents.YANDEX_GEO:
                 if 'street' in entity['value'].keys() and 'house_number' in entity['value'].keys():
                     address = skillUtils.validate_address(entity['value']['street'], entity['value']['house_number'])
-                    self.problem = handle_problem(location=location, intent_name=intent_name, address=address)
+                    problem_address = {'street': entity['value']['street'],
+                                       'house_number': entity['value']['house_number']
+                                       }
+                    self.problem = handle_problem(location=location, intent_name=intent_name, address=problem_address)
 
                     if location == 'Location.APARTMENT':
                         if 'квартира' not in address.keys():
@@ -269,9 +272,7 @@ class InquiryGetFloorConfirmation(InquiryGetFloor):
 class InquiryAccepted(InquiryAddressCollector):
 
     def reply(self, request: Request):
-        user_problem = request.intent_name
         # Вставить вызов API с регистрацией заявки и обновлением статуса в хранилище состояний
-
         inquiry_id = InquiryApi.inquiry_make(self.problem)
         text = ('Ваша заявка зарегистрирована. Спасибо за обращение! Хотите оформить еще одну заявку?')
         return self.make_response(text, buttons=handle_buttons("Да", "Нет"), application_state={'report_id': inquiry_id})
