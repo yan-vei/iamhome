@@ -33,6 +33,11 @@ class Request:
         return state.get('session', {}).get('problem', {}).get('location')
 
     @property
+    def problem_address(self):
+        state = self.request_body['state']
+        return state.get('session', {}).get('problem', {}).get('address', {})
+
+    @property
     def entities(self):
         return self.request_body['request'].get('nlu', {}).get('entities', {})
 

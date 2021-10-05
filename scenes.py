@@ -220,11 +220,12 @@ class InquiryGetApartment(InquiryAddressCollector):
         return self.make_response(text, problem_state=self.problem)
 
     def handle_local_intents(self, request: Request):
+        self.problem = handle_problem(location=request.problem_location, intent_name=request.intent_name,
+                                      address=request.problem_address)
         for entity in request.entities:
             if entity['type'] == intents.YANDEX_NUMBER:
-                problem = self.problem
-                problem['apartment_number'] = entity.get('value', 0)
-                return InquiryAccepted(problem)
+                self.problem['apartment_number'] = entity.get('value', 0)
+                return InquiryAccepted(self.problem)
 
 
 class InquiryGetFloor(InquiryAddressCollector):
@@ -234,6 +235,8 @@ class InquiryGetFloor(InquiryAddressCollector):
         return self.make_response(text, problem_state=self.problem)
 
     def handle_local_intents(self, request: Request):
+        self.problem = handle_problem(location=request.problem_location, intent_name=request.intent_name,
+                                      address=request.problem_address)
         for entity in request.entities:
             if entity['type'] == intents.YANDEX_NUMBER:
                 print('User added the floor.')
@@ -252,12 +255,13 @@ class InquiryGetFloorConfirmation(InquiryGetFloor):
         return self.make_response(text, problem_state=self.problem)
 
     def handle_local_intents(self, request: Request):
+        self.problem = handle_problem(location=request.problem_location, intent_name=request.intent_name,
+                                      address=request.problem_address)
         for entity in request.entities:
             if entity['type'] == intents.YANDEX_NUMBER:
-                problem = self.problem
-                problem['floor'] = entity['value']
+                self.problem['floor'] = entity['value']
                 print('User added the floor.')
-                return InquiryAccepted(problem)
+                return InquiryAccepted(self.problem)
 
 
 class InquiryAccepted(InquiryAddressCollector):
@@ -266,7 +270,7 @@ class InquiryAccepted(InquiryAddressCollector):
         user_problem = request.intent_name
         # Вставить вызов API с регистрацией заявки и обновлением статуса в хранилище состояний
 
-        inquiry_id = InquiryApi.InquiryMake(self.problem)
+        inquiry_id = InquiryApi.inquiry_make(self.problem)
         text = ('Ваша заявка зарегистрирована. Спасибо за обращение! Хотите оформить еще одну заявку?')
         return self.make_response(text, buttons=handle_buttons("Да", "Нет"), application_state={'report_id': inquiry_id})
 
@@ -298,9 +302,9 @@ class FailedInquiry(InquiryLocationCollector):
 class StartCheck(Beginning):
     def reply(self, request: Request):
         if request.report_state is not None:
-            text = add_positive_answer('Давайте проверим вашу последнюю заявку под номером. Хотите сообщить об еще одной проблеме?')
-        # вставить вызов API
-        # проверить статус, в зависимости от статуса составить ответ, обновить хранилище состояний, если нужно
+            text = ('Давайте проверим вашу последнюю заявку под номером.' + request.report_state + '. Хотите сообщить об еще одной проблеме?')
+            if InquiryApi.inquiry_receive(1) == 4:
+                return self.make_response(text, application_state={})  # обнуляем хранилище
         else:
             text = ('Пока что вы не оставляли никаких заявок. Хотите оставить свою первую заявку?')
         return self.make_response(text)
