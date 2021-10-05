@@ -143,7 +143,7 @@ class InquiryLocationCollector(Beginning):
 
     def reply(self, request: Request):
         text = add_positive_answer('А что случилось?')
-        top_intents = skillUtils.suggestTopIntents(self.location)
+        top_intents = suggestTopIntents(self.location)
         if top_intents != None:
             buttons = top_intents
         return self.make_response(text, problem_location=self.location, buttons=handle_buttons(buttons))
@@ -302,6 +302,27 @@ def _list_scenes():
         if inspect.isclass(obj) and issubclass(obj, Scene):
             scenes.append(obj)
     return scenes
+
+
+def suggestTopIntents(location):
+    suggested_intents = []
+
+    if location == 'Location.APARTMENT':
+        top = intents.TOP_APARTMENT_INTENTS
+        all_intents = intents.APARTMENT_INTENTS
+    elif location == 'Location.HOUSE':
+        top = intents.TOP_HOUSE_INTENTS
+        all_intents = intents.HOUSE_INTENTS
+
+    for top_intent in top:
+        for intent in all_intents:
+            if top_intent == intent['intent_name']:
+                suggested_intents.append(intent['informal_name'])
+                break
+
+    if suggested_intents != []:
+        return suggested_intents
+    return None
 
 
 SCENES = {
