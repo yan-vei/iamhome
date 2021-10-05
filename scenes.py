@@ -107,7 +107,7 @@ class Beginning(Scene):
     def reply(self, request: Request):
         last_inquiry = ''
         if request.report_state is not None:
-            InquiryApi.InquiryReceive(request.report_state)
+            InquiryApi.inquiry_receive(request.report_state)
             last_inquiry = ('Статус вашей последней заявки... ')
         if last_inquiry != '':
             text = last_inquiry + 'Хотите оформить новую заявку или узнать больше о том, что я умею?'
@@ -147,7 +147,6 @@ class StartInquiry(Beginning):
         if intents.CHOOSE_INQUIRY_LOCATION in request.intents:
             print('User selected location: ' + str(request.intents[intents.CHOOSE_INQUIRY_LOCATION]['slots']['location']['value']))
             problem = handle_problem(location=entities.choose_location(request, intents.CHOOSE_INQUIRY_LOCATION))
-            #location = entities.choose_location(request, intents.CHOOSE_INQUIRY_LOCATION)
             return InquiryLocationCollector(problem)
 
 
@@ -185,7 +184,6 @@ class InquiryAddressCollector(Beginning):
         self.problem = problem
 
     def reply(self, request: Request):
-        # location = request.problem_location
         text = add_positive_answer('Подскажете адрес?')
         return self.make_response(text, problem_state=self.problem)
 
