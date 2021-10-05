@@ -143,8 +143,10 @@ class InquiryLocationCollector(Beginning):
 
     def reply(self, request: Request):
         text = add_positive_answer('А что случилось?')
-        print(self.location)
-        return self.make_response(text, problem_location=self.location)
+        top_intents = skillUtils.suggestTopIntents(self.location)
+        if top_intents != None:
+            buttons = top_intents
+        return self.make_response(text, problem_location=self.location, buttons=handle_buttons(buttons[0], buttons[1], buttons[2], buttons[3]))
 
     def handle_local_intents(self, request: Request):
         # Выбрать подходящий массив с интентами для поиска в зависимости от локации

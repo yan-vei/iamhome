@@ -94,7 +94,7 @@ HOUSE_INTENTS = \
          'category_id': 1,
          'subcategory_id': 1,
          'location': 3,
-        'informal_name': 'Холодно',
+        'informal_name': 'Нет отопления',
         'date_restriction': '15/10-12/05',
          'date_pronunciation': 'с 15 октября по 12 мая'
         },
@@ -238,7 +238,7 @@ HOUSE_INTENTS = \
          'category_id': 6,
          'subcategory_id': 1,
          'location': 3,
-        'informal_name': 'Изрисованы стены'
+        'informal_name': 'Надписи на стенах'
         },
         {'intent_name': 'paintHouse', # Неудовлетворительное состояние окраски фасада дома (кроме несанкционированных надписей/объявления на стенах дома)
          'category_id': 6,
@@ -260,8 +260,9 @@ HOUSE_INTENTS = \
         }
 ]
 
-TOP_HOUSE_INTENTS = [APARTMENT_INTENTS['brokenSewageHouse'], HOUSE_INTENTS['iceHouse'], HOUSE_INTENTS['lowTempHouse'], HOUSE_INTENTS['cleaningScheduleHouse'], HOUSE_INTENTS['illegalWritingsHouse']]
-TOP_APARTMENT_INTENTS = [APARTMENT_INTENTS['leakingPipeApartment'], APARTMENT_INTENTS['lowTempApartment'], APARTMENT_INTENTS['noColdWaterApartment'], APARTMENT_INTENTS['brokenSewageApartment']]
+
+TOP_HOUSE_INTENTS = ['brokenSewageHouse', 'iceHouse', 'cleaningScheduleHouse', 'illegalWritingsHouse']
+TOP_APARTMENT_INTENTS = ['leakingPipeApartment', 'lowTempApartment', 'noColdWaterApartment', 'brokenSewageApartment']
 
 # LOCATION CODES:
 # UNKNOWN = 1
