@@ -260,8 +260,9 @@ HOUSE_INTENTS = \
         }
 ]
 
-TOP_HOUSE_INTENTS = [APARTMENT_INTENTS['brokenSewageHouse'], HOUSE_INTENTS['iceHouse'], HOUSE_INTENTS['lowTempHouse'], HOUSE_INTENTS['cleaningScheduleHouse'], HOUSE_INTENTS['illegalWritingsHouse']]
-TOP_APARTMENT_INTENTS = [APARTMENT_INTENTS['leakingPipeApartment'], APARTMENT_INTENTS['lowTempApartment'], APARTMENT_INTENTS['noColdWaterApartment'], APARTMENT_INTENTS['brokenSewageApartment']]
+
+TOP_HOUSE_INTENTS = ['brokenSewageHouse', 'iceHouse', 'lowTempHouse', 'cleaningScheduleHouse', 'illegalWritingsHouse']
+TOP_APARTMENT_INTENTS = ['leakingPipeApartment', 'lowTempApartment', 'noColdWaterApartment', 'brokenSewageApartment']
 
 # LOCATION CODES:
 # UNKNOWN = 1
