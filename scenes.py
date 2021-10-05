@@ -145,10 +145,10 @@ class InquiryLocationCollector(Beginning):
         text = add_positive_answer('А что случилось?')
         print(self.location)
         suggested_intents = []
-        if self.location == 'Location.APARTMENT':
+        if str(self.location) == 'Location.APARTMENT':
             top = intents.TOP_APARTMENT_INTENTS
             all_intents = intents.APARTMENT_INTENTS
-        elif self.location == 'Location.HOUSE':
+        elif str(self.location) == 'Location.HOUSE':
             top = intents.TOP_HOUSE_INTENTS
             all_intents = intents.HOUSE_INTENTS
         print(top)
