@@ -21,7 +21,7 @@ APARTMENT_INTENTS = [{'intent_name': 'lowTempApartment',  # Низкая тем�
                     'date_restriction': '15/10-12/05',
                     'date_pronunciation': 'с 15 октября по 12 мая',
                     'location': 2,
-                    'informal_name': 'Холодно'},
+                    'informal_name': 'Нет отопления'},
                    {'intent_name': 'highTempApartment',  # Высокая температура в отапливаемом помещении
                     'category_id': 1,
                     'subcategory_id': 2,
