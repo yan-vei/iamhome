@@ -105,15 +105,13 @@ class Scene(ABC):
 
 class Beginning(Scene):
     def reply(self, request: Request):
-        last_inquiry = ''
         if request.report_state is not None:
             if InquiryApi.inquiry_receive(request.report_state) == 4:
-                last_inquiry = ('Статус вашей последней заявки - выполнена.')
+                text = ('Статус вашей последней заявки - выполнена. Хотите оформить новую заявку или узнать больше о том, что я умею?')
+                return self.make_response(text, buttons=handle_buttons("Оформить заявку", "Проверить статус"))
             else:
-                last_inquiry = ('Статус вашей последней заявки - обработана.')
-        if last_inquiry != '':
-            text = last_inquiry + 'Хотите оформить новую заявку или узнать больше о том, что я умею?'
-            return self.make_response(text, buttons=handle_buttons("Оформить заявку", "Проверить статус"), application_state={})
+                text = ('Статус вашей последней заявки - выполнена. Хотите оформить новую заявку или узнать больше о том, что я умею?')
+                return self.make_response(text, buttons=handle_buttons("Оформить заявку", "Проверить статус"), application_state={})
         else:
             text = ('Здравствуйте! Я - помощник по проблемам с ЖКХ в вашем доме. \
                     Хотите оформить заявку или проверить статус?')
