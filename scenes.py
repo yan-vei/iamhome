@@ -105,16 +105,17 @@ class Scene(ABC):
 
 class Beginning(Scene):
     def reply(self, request: Request):
-        last_inquiry = ''
         if request.report_state is not None:
-            InquiryApi.inquiry_receive(request.report_state)
-            last_inquiry = ('Статус вашей последней заявки... ')
-        if last_inquiry != '':
-            text = last_inquiry + 'Хотите оформить новую заявку или узнать больше о том, что я умею?'
+            if InquiryApi.inquiry_receive(request.report_state) == 4:
+                text = ('Статус вашей последней заявки - выполнена. Хотите оформить новую заявку или узнать больше о том, что я умею?')
+                return self.make_response(text, buttons=handle_buttons("Оформить заявку", "Проверить статус"), application_state={})
+            else:
+                text = ('Статус вашей последней заявки - в обработке. Хотите оформить новую заявку или узнать больше о том, что я умею?')
+                return self.make_response(text, buttons=handle_buttons("Оформить заявку", "Проверить статус"))
         else:
             text = ('Здравствуйте! Я - помощник по проблемам с ЖКХ в вашем доме. \
                     Хотите оформить заявку или проверить статус?')
-        return self.make_response(text, buttons=handle_buttons("Оформить заявку", "Проверить статус"))
+            return self.make_response(text, buttons=handle_buttons("Оформить заявку", "Проверить статус"))
 
     def handle_global_intents(self, request):
         if intents.YANDEX_HELP in request.intents or intents.LEARN_MORE in request.intents:
@@ -270,9 +271,8 @@ class InquiryGetFloorConfirmation(InquiryGetFloor):
 
 
 class InquiryAccepted(InquiryAddressCollector):
-
     def reply(self, request: Request):
-        # Вставить вызов API с регистрацией заявки и обновлением статуса в хранилище состояний
+        # Регистрация заявки с помощью вызова класса InquiryApi
         inquiry_id = InquiryApi.inquiry_make(self.problem)
         text = ('Ваша заявка зарегистрирована. Спасибо за обращение! Хотите оформить еще одну заявку?')
         return self.make_response(text, buttons=handle_buttons("Да", "Нет"), application_state={'report_id': inquiry_id})
@@ -305,9 +305,13 @@ class FailedInquiry(InquiryLocationCollector):
 class StartCheck(Beginning):
     def reply(self, request: Request):
         if request.report_state is not None:
-            text = ('Давайте проверим вашу последнюю заявку под номером.' + str(request.report_state) + '. Хотите сообщить об еще одной проблеме?')
-            if InquiryApi.inquiry_receive(1) == 4:
+            text = ('Давайте проверим вашу последнюю заявку под номером ' + str(request.report_state) + '. ')
+            if InquiryApi.inquiry_receive(request.report_state) == 4:
+                text += "Статус вашей последней заявки - выполнена. Хотите оставить еще одну заявку?"
                 return self.make_response(text, application_state={})  # обнуляем хранилище
+            else:
+                text += "Статус вашей последней заявки - в обработке. Хотите оставить еще одну заявку?"
+                return self.make_response(text)
         else:
             text = ('Пока что вы не оставляли никаких заявок. Хотите оставить свою первую заявку?')
         return self.make_response(text)
