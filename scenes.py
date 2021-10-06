@@ -273,7 +273,6 @@ class InquiryGetFloorConfirmation(InquiryGetFloor):
 
 
 class InquiryAccepted(InquiryAddressCollector):
-
     def reply(self, request: Request):
         # Регистрация заявки с помощью вызова класса InquiryApi
         inquiry_id = InquiryApi.inquiry_make(self.problem)
@@ -308,9 +307,13 @@ class FailedInquiry(InquiryLocationCollector):
 class StartCheck(Beginning):
     def reply(self, request: Request):
         if request.report_state is not None:
-            text = ('Давайте проверим вашу последнюю заявку под номером.' + str(request.report_state) + '. Хотите сообщить об еще одной проблеме?')
+            text = ('Давайте проверим вашу последнюю заявку под номером ' + str(request.report_state) + '. ')
             if InquiryApi.inquiry_receive(1) == 4:
+                text += "Статус вашей последней заявки - выполнена. Хотите оставить еще одну заявку?"
                 return self.make_response(text, application_state={})  # обнуляем хранилище
+            else:
+                text += "Статус вашей последней заявки - в обработке. Хотите оставить еще одну заявку?"
+                return self.make_response(text)
         else:
             text = ('Пока что вы не оставляли никаких заявок. Хотите оставить свою первую заявку?')
         return self.make_response(text)
