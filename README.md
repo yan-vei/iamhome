@@ -1,7 +1,7 @@
-# "Я в домике" - навык для Яндекс.Алисы
+# "Помощник по проблемам ЖКХ в Петербурге" - навык для Яндекс.Алисы
 [![Deploy to Yandex.Cloud](https://github.com/yan-vei/iamhome/actions/workflows/deploy.yml/badge.svg)](https://github.com/yan-vei/iamhome/actions/workflows/deploy.yml)
 [![CodeQL analysis](https://github.com/yan-vei/iamhome/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/yan-vei/iamhome/actions/workflows/codeql-analysis.yml)<br>
-"Я в домике" - это навык-помощник по проблемам с ЖКХ для Яндекс.Алисы.<br>
+"Помощник по проблемам ЖКХ в Петербурге" - это навык-помощник для Яндекс.Алисы.<br>
 
 Данный навык был разработан командой camelCase для [онлайн-хакатона](https://yandex.ru/promo/events/generated/online-hakathon-spb/index) по городским навыкам для Санкт-Петербурга, который был организован командами Яндекс.Алисы, Яндекс.Диалогов и Яндекс.Облака совместно с университетом ИТМО. 
 
