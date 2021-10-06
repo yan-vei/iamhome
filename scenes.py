@@ -123,8 +123,7 @@ class Beginning(Scene):
             return Help()
         elif intents.EXIT_SKILL in request.intents:
             print('User exited the skill.')
-            text = add_positive_answer('Увидимся в другой раз!')
-            return self.make_response(text, end_session=True)
+            return Exit()
 
     def handle_local_intents(self, request: Request):
         if intents.CREATE_INQUIRY in request.intents:
@@ -141,6 +140,12 @@ class Help(Beginning):
                     Например, я могу оформить заявку о засорившемся мусоропроводе, или, \
                     если вы уже создали заявку, я могу ее проверить. Хотите оформить заявку или проверить статус?')
         return self.make_response(text, buttons=handle_buttons("Оформить заявку", "Проверить статус"))
+
+
+class Exit(Beginning):
+    def reply(self, request:Request):
+        text = add_positive_answer('Увидимся в другой раз!')
+        return self.make_response(text, end_session=True)
 
 
 class StartInquiry(Beginning):
