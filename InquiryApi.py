@@ -6,7 +6,7 @@ class InquiryApi:
         print('Inquiry has been sent')
         print('Collected Inquiry' + str(problem))
         # problem -> to back
-        return random.randint(0, 1)  # id
+        return random.randint(0, 3)  # id
 
     @classmethod
     def inquiry_receive(cls, inquiry_id):
