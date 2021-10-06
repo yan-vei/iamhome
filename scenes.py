@@ -121,6 +121,10 @@ class Beginning(Scene):
         if intents.YANDEX_HELP in request.intents or intents.LEARN_MORE in request.intents:
             print('User requested help.')
             return Help()
+        elif intents.EXIT_SKILL in request.intents:
+            print('User exited the skill.')
+            text = add_positive_answer('Увидимся в другой раз!')
+            return self.make_response(text, end_session=True)
 
     def handle_local_intents(self, request: Request):
         if intents.CREATE_INQUIRY in request.intents:
