@@ -308,7 +308,7 @@ class StartCheck(Beginning):
     def reply(self, request: Request):
         if request.report_state is not None:
             text = ('Давайте проверим вашу последнюю заявку под номером ' + str(request.report_state) + '. ')
-            if InquiryApi.inquiry_receive(1) == 4:
+            if InquiryApi.inquiry_receive(request.report_state) == 4:
                 text += "Статус вашей последней заявки - выполнена. Хотите оставить еще одну заявку?"
                 return self.make_response(text, application_state={})  # обнуляем хранилище
             else:
