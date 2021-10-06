@@ -2,6 +2,7 @@
 CREATE_INQUIRY = 'createInquiry'
 CHECK_INQUIRY = 'checkInquiry'
 LEARN_MORE = 'learnMore'
+EXIT_SKILL = 'exit'
 
 YANDEX_HELP = 'YANDEX.HELP'
 YANDEX_CONFIRM = 'YANDEX.CONFIRM'
