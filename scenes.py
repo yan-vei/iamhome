@@ -108,10 +108,10 @@ class Beginning(Scene):
         if request.report_state is not None:
             if InquiryApi.inquiry_receive(request.report_state) == 4:
                 text = ('Статус вашей последней заявки - выполнена. Хотите оформить новую заявку или узнать больше о том, что я умею?')
-                return self.make_response(text, buttons=handle_buttons("Оформить заявку", "Проверить статус"), application_state={})
+                return self.make_response(text, buttons=handle_buttons("Оформить заявку", "Узнать больше"), application_state={})
             else:
                 text = ('Статус вашей последней заявки - в обработке. Хотите оформить новую заявку или узнать больше о том, что я умею?')
-                return self.make_response(text, buttons=handle_buttons("Оформить заявку", "Проверить статус"))
+                return self.make_response(text, buttons=handle_buttons("Оформить заявку", "Узнать больше"))
         else:
             text = ('Здравствуйте! Я - помощник по проблемам с ЖКХ в вашем доме. \
                     Хотите оформить заявку или проверить статус?')
