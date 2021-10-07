@@ -267,7 +267,8 @@ GENERIC_INTENTS = [
       'intent_name': 'noWaterApartment',
       'related_intents': {'hotWater': 'noHotWaterApartment', 'coldWater': 'noColdWaterApartment'},
       'informal_name': 'Нет воды',
-      'question': 'Нет горячей воды или холодной?'
+      'question': 'Нет горячей воды или холодной?',
+      'location': 'Location.APARTMENT'
     }
 ]
 
