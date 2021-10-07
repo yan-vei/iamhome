@@ -108,10 +108,10 @@ class Beginning(Scene):
         if request.report_state is not None:
             if InquiryApi.inquiry_receive(request.report_state) == 4:
                 text = ('Статус вашей последней заявки - выполнена. Хотите оформить новую заявку или узнать больше о том, что я умею?')
-                return self.make_response(text, buttons=handle_buttons("Оформить заявку", "Проверить статус"), application_state={})
+                return self.make_response(text, buttons=handle_buttons("Оформить заявку", "Узнать больше"), application_state={})
             else:
                 text = ('Статус вашей последней заявки - в обработке. Хотите оформить новую заявку или узнать больше о том, что я умею?')
-                return self.make_response(text, buttons=handle_buttons("Оформить заявку", "Проверить статус"))
+                return self.make_response(text, buttons=handle_buttons("Оформить заявку", "Узнать больше"))
         else:
             text = ('Здравствуйте! Я - помощник по проблемам с ЖКХ в вашем доме. \
                     Хотите оформить заявку или проверить статус?')
@@ -174,22 +174,49 @@ class InquiryLocationCollector(Beginning):
     def handle_local_intents(self, request: Request):
         # Выбрать подходящий массив с интентами для поиска в зависимости от локации
         location = request.problem_location
-        print('location fetched ' + str(location))
+        print('Location fetched ' + str(location))
         if location == 'Location.APARTMENT':
             lookup_intents = intents.APARTMENT_INTENTS
         elif location == 'Location.HOUSE':
             lookup_intents = intents.HOUSE_INTENTS
 
-        # lookup_intents = intents.APARTMENT_INTENTS if location == 'Location.APARTMENT' else intents.HOUSE_INTENTS
-
         for intent in lookup_intents:
             if intent['intent_name'] in request.intents and 'date_restriction' in intent.keys():
                 if not skillUtils._is_in_range(intent['date_restriction']):
-                    return FailedInquiry('об этом можно сообщить только в период ' + str(intent['date_restriction']) + ".")
+                    return FailedInquiry('об этом можно сообщить только в период ' + str(intent['date_pronunciation']) + ".")
                 else:
                     return InquiryAddressCollector(handle_problem(location=location, intent_name=intent['intent_name']))
             elif intent['intent_name'] in request.intents and 'date_restriction' not in intent.keys():
                 return InquiryAddressCollector(handle_problem(location=location, intent_name=intent['intent_name']))
+            elif intent['intent_name'] not in request.intents:
+                for generic_intent in intents.GENERIC_INTENTS:
+                    if generic_intent['intent_name'] in request.intents:
+                        return InquiryDetailsCollector(generic_intent['intent_name'], location)
+
+
+class InquiryDetailsCollector(Beginning):
+    def __init__(self, generic_problem=None, location=None):
+        self.generic_problem = generic_problem
+        self.location = location
+        if generic_problem != None:
+            self.question = self.get_question()
+
+    def get_question(self):
+        for generic_intent in intents.GENERIC_INTENTS:
+            if generic_intent['intent_name'] == self.generic_problem:
+                return generic_intent['question']
+        return None
+
+    def reply(self, request: Request):
+        question = ('Тогда мне надо кое-что уточнить. ' + self.question)
+        text = add_positive_answer(question)
+        return self.make_response(text, problem_state=self.generic_problem)
+
+    def handle_local_intents(self, request: Request):
+        for intent in intents.GENERIC_INTENTS:
+            for key_intent in intent['related_intents'].keys():
+                if key_intent in request.intents:
+                    return InquiryAddressCollector(handle_problem(location=intent['location'], intent_name=intent['related_intents'][key_intent]))
 
 
 

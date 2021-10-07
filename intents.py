@@ -262,6 +262,24 @@ HOUSE_INTENTS = \
 ]
 
 
+GENERIC_INTENTS = [
+    {
+      'intent_name': 'noWaterApartment',
+      'related_intents': {'hotWater': 'noHotWaterApartment', 'coldWater': 'noColdWaterApartment'},
+      'informal_name': 'Нет воды',
+      'question': 'Нет горячей воды или холодной?',
+      'location': 'Location.APARTMENT'
+    },
+    {
+      'intent_name': 'badSmellApartment',
+      'related_intents': {'ventilationSmell': 'brokenVentilationApartment', 'sewageSmell': 'brokenSewageApartment'},
+      'informal_name': 'Плохой запах',
+      'question': 'Сломалась вентиляция или засорилась канализация?',
+      'location': 'Location.APARTMENT'
+    }
+]
+
+
 TOP_HOUSE_INTENTS = ['brokenSewageHouse', 'iceHouse', 'cleaningScheduleHouse', 'illegalWritingsHouse']
 TOP_APARTMENT_INTENTS = ['leakingPipeApartment', 'lowTempApartment', 'noColdWaterApartment', 'brokenSewageApartment']
 
