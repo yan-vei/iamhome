@@ -210,14 +210,13 @@ class InquiryDetailsCollector(Beginning):
     def reply(self, request: Request):
         question = ('Тогда мне надо кое-что уточнить. ' + self.question)
         text = add_positive_answer(question)
-        return self.make_response(text, problem_state=self.generic_problem, location=self.location)
+        return self.make_response(text, problem_state=self.generic_problem)
 
     def handle_local_intents(self, request: Request):
-        location = request.problem_location
         for intent in intents.GENERIC_INTENTS:
             for key_intent in intent['related_intents'].keys():
                 if key_intent in request.intents:
-                    return InquiryAddressCollector(handle_problem(location=location, intent_name=intent['related_intents'][key_intent]))
+                    return InquiryAddressCollector(handle_problem(location=intent['location'], intent_name=intent['related_intents'][key_intent]))
 
 
 
