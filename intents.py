@@ -269,6 +269,13 @@ GENERIC_INTENTS = [
       'informal_name': 'Нет воды',
       'question': 'Нет горячей воды или холодной?',
       'location': 'Location.APARTMENT'
+    },
+    {
+      'intent_name': 'badSmellApartment',
+      'related_intents': {'ventilationSmell': 'brokenVentilationApartment', 'sewageSmell': 'brokenSewageApartment'},
+      'informal_name': 'Плохой запах',
+      'question': 'Сломалась вентиляция или засорилась канализация?',
+      'location': 'Location.APARTMENT'
     }
 ]
 
