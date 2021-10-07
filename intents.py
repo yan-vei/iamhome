@@ -282,6 +282,12 @@ GENERIC_INTENTS = [
      'informal_name': 'Слабый напор воды',
      'question': 'Слабый напор у холодной воды или горячей?',
      'location': 'Location.APARTMENT'
+    },
+    {'intent_name': 'dirtyWaterApartment',
+     'related_intents': {'coldWater': 'badQualityColdApartment', 'hotWater': 'badQualityHotApartment'},
+     'informal_name': 'Грязная вода',
+     'question': 'Грязная вода холодная или горячая?',
+     'location': 'Location.APARTMENT'
     }
 ]
 
