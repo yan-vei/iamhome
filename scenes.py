@@ -198,14 +198,12 @@ class InquiryDetailsCollector(Beginning):
     def __init__(self, generic_problem=None):
         self.generic_problem = generic_problem
         if generic_problem != None:
-            self.generic_intent = self.get_intent()
-            self.question = self.generic_intent['question']
-            self.related_intents = self.generic_intent['related_intents']
+            self.question = self.get_question()
 
-    def get_intent(self):
+    def get_question(self):
         for generic_intent in intents.GENERIC_INTENTS:
             if generic_intent['intent_name'] == self.generic_problem:
-                return generic_intent
+                return generic_intent['question']
         return None
 
     def reply(self, request: Request):
@@ -214,9 +212,10 @@ class InquiryDetailsCollector(Beginning):
         return self.make_response(text, problem_state=self.generic_problem)
 
     def handle_local_intents(self, request: Request):
-        for intent in self.related_intents:
-            if intent['intent_name'] in request.intents:
-                return InquiryDetailsCollector(intent['intent_name'])
+        for intent in intents.GENERIC_INTENTS:
+            for key_intent in intent['related_intents'].keys:
+                if key_intent in request.intents:
+                    return InquiryDetailsCollector(intent['related_intents'][key_intent])
 
 
 
