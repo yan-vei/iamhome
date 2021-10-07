@@ -198,18 +198,26 @@ class InquiryDetailsCollector(Beginning):
     def __init__(self, generic_problem=None):
         self.generic_problem = generic_problem
         if generic_problem != None:
-            self.question = self.get_question()
+            self.generic_intent = self.get_intent()
+            self.question = self.generic_intent['question']
+            self.related_intents = self.generic_intent['related_intents']
 
-    def get_question(self):
+    def get_intent(self):
         for generic_intent in intents.GENERIC_INTENTS:
             if generic_intent['intent_name'] == self.generic_problem:
-                return generic_intent['question']
+                return generic_intent
         return None
 
     def reply(self, request: Request):
         question = ('Тогда мне надо кое-что уточнить. ' + self.question)
         text = add_positive_answer(question)
         return self.make_response(text, problem_state=self.generic_problem)
+
+    def handle_local_intents(self, request: Request):
+        for intent in self.related_intents:
+            if intent['intent_name'] in request.intents:
+                return InquiryDetailsCollector(intent['intent_name'])
+
 
 
 class InquiryAddressCollector(Beginning):
