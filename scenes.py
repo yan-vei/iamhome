@@ -191,12 +191,13 @@ class InquiryLocationCollector(Beginning):
             elif intent['intent_name'] not in request.intents:
                 for generic_intent in intents.GENERIC_INTENTS:
                     if generic_intent['intent_name'] in request.intents:
-                        return InquiryDetailsCollector(generic_intent['intent_name'])
+                        return InquiryDetailsCollector(generic_intent['intent_name'], location)
 
 
 class InquiryDetailsCollector(Beginning):
-    def __init__(self, generic_problem=None):
+    def __init__(self, generic_problem=None, location=None):
         self.generic_problem = generic_problem
+        self.location = location
         if generic_problem != None:
             self.question = self.get_question()
 
@@ -209,13 +210,14 @@ class InquiryDetailsCollector(Beginning):
     def reply(self, request: Request):
         question = ('Тогда мне надо кое-что уточнить. ' + self.question)
         text = add_positive_answer(question)
-        return self.make_response(text, problem_state=self.generic_problem)
+        return self.make_response(text, problem_state=self.generic_problem, location=self.location)
 
     def handle_local_intents(self, request: Request):
+        location = request.problem_location
         for intent in intents.GENERIC_INTENTS:
             for key_intent in intent['related_intents'].keys():
                 if key_intent in request.intents:
-                    return InquiryAddressCollector(intent['related_intents'][key_intent])
+                    return InquiryAddressCollector(handle_problem(location=location, intent_name=intent['related_intents'][key_intent]))
 
 
 
