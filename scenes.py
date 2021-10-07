@@ -207,18 +207,15 @@ class InquiryDetailsCollector(Beginning):
         return None
 
     def reply(self, request: Request):
-        if self.question is not None:
-            question = ('Тогда мне надо кое-что уточнить. ' + self.question)
-            text = add_positive_answer(question)
-        else:
-            text = ''
+        question = ('Тогда мне надо кое-что уточнить. ' + self.question)
+        text = add_positive_answer(question)
         return self.make_response(text, problem_state=self.generic_problem)
 
     def handle_local_intents(self, request: Request):
         for intent in intents.GENERIC_INTENTS:
             for key_intent in intent['related_intents'].keys():
                 if key_intent in request.intents:
-                    return InquiryDetailsCollector(intent['related_intents'][key_intent])
+                    return InquiryAddressCollector(intent['related_intents'][key_intent])
 
 
 
