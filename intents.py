@@ -276,6 +276,18 @@ GENERIC_INTENTS = [
       'informal_name': 'Плохой запах',
       'question': 'Сломалась вентиляция или засорилась канализация?',
       'location': 'Location.APARTMENT'
+    },
+    {'intent_name': 'weakPressureApartment',
+     'related_intents': {'coldWater': 'weakColdPressureApartment', 'hotWater': 'weakHotPressureApartment'},
+     'informal_name': 'Слабый напор воды',
+     'question': 'Слабый напор у холодной воды или горячей?',
+     'location': 'Location.APARTMENT'
+    },
+    {'intent_name': 'dirtyWaterApartment',
+     'related_intents': {'coldWater': 'badQualityColdApartment', 'hotWater': 'badQualityHotApartment'},
+     'informal_name': 'Грязная вода',
+     'question': 'Грязная вода холодная или горячая?',
+     'location': 'Location.APARTMENT'
     }
 ]
 
