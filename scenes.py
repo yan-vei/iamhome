@@ -203,7 +203,7 @@ class InquiryDetailsCollector(Beginning):
     def get_question(self):
         for generic_intent in intents.GENERIC_INTENTS:
             if generic_intent['intent_name'] == self.generic_problem:
-                return intents.GENERIC_INTENTS[self.generic_problem]
+                return generic_intent['question']
         return None
 
     def reply(self, request: Request):
