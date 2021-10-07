@@ -262,6 +262,16 @@ HOUSE_INTENTS = \
 ]
 
 
+GENERIC_INTENTS = [
+    {
+      'intent_name': 'noWaterApartment',
+      'related_intents': ['noHotWaterApartment', 'noColdWaterApartment'],
+      'informal_name': 'Нет воды',
+      'question': 'А нет горячей воды или холодной?'
+    }
+]
+
+
 TOP_HOUSE_INTENTS = ['brokenSewageHouse', 'iceHouse', 'cleaningScheduleHouse', 'illegalWritingsHouse']
 TOP_APARTMENT_INTENTS = ['leakingPipeApartment', 'lowTempApartment', 'noColdWaterApartment', 'brokenSewageApartment']
 

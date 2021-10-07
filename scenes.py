@@ -174,13 +174,11 @@ class InquiryLocationCollector(Beginning):
     def handle_local_intents(self, request: Request):
         # Выбрать подходящий массив с интентами для поиска в зависимости от локации
         location = request.problem_location
-        print('location fetched ' + str(location))
+        print('Location fetched ' + str(location))
         if location == 'Location.APARTMENT':
             lookup_intents = intents.APARTMENT_INTENTS
         elif location == 'Location.HOUSE':
             lookup_intents = intents.HOUSE_INTENTS
-
-        # lookup_intents = intents.APARTMENT_INTENTS if location == 'Location.APARTMENT' else intents.HOUSE_INTENTS
 
         for intent in lookup_intents:
             if intent['intent_name'] in request.intents and 'date_restriction' in intent.keys():
@@ -190,7 +188,28 @@ class InquiryLocationCollector(Beginning):
                     return InquiryAddressCollector(handle_problem(location=location, intent_name=intent['intent_name']))
             elif intent['intent_name'] in request.intents and 'date_restriction' not in intent.keys():
                 return InquiryAddressCollector(handle_problem(location=location, intent_name=intent['intent_name']))
+            elif intent['intent_name'] not in request.intents:
+                for generic_intent in intents.GENERIC_INTENTS:
+                    if generic_intent['intent_name'] in request.intents:
+                        return InquiryDetailsCollector(generic_intent['intent_name'])
 
+
+class InquiryDetailsCollector(Beginning):
+    def __init__(self, generic_problem=None):
+        self.generic_problem = generic_problem
+        if generic_problem != None:
+            self.question = self.get_question()
+
+    def get_question(self):
+        for generic_intent in intents.GENERIC_INTENTS:
+            if generic_intent['intent_name'] == self.generic_problem:
+                return intents.GENERIC_INTENTS[self.generic_problem]
+        return None
+
+    def reply(self, request: Request):
+        question = ('Тогда мне надо кое-что уточнить. ' + self.question)
+        text = add_positive_answer(question)
+        return self.make_response(text, problem_state=self.generic_problem)
 
 
 class InquiryAddressCollector(Beginning):
