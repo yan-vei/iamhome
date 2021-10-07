@@ -207,8 +207,11 @@ class InquiryDetailsCollector(Beginning):
         return None
 
     def reply(self, request: Request):
-        question = ('Тогда мне надо кое-что уточнить. ' + self.question)
-        text = add_positive_answer(question)
+        if self.question is not None:
+            question = ('Тогда мне надо кое-что уточнить. ' + self.question)
+            text = add_positive_answer(question)
+        else:
+            text = ''
         return self.make_response(text, problem_state=self.generic_problem)
 
     def handle_local_intents(self, request: Request):
