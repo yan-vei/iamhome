@@ -213,7 +213,7 @@ class InquiryDetailsCollector(Beginning):
 
     def handle_local_intents(self, request: Request):
         for intent in intents.GENERIC_INTENTS:
-            for key_intent in intent['related_intents'].keys:
+            for key_intent in intent['related_intents'].keys():
                 if key_intent in request.intents:
                     return InquiryDetailsCollector(intent['related_intents'][key_intent])
 
